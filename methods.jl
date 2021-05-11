@@ -10,6 +10,7 @@ mutable struct Momentum <: DescentMethod
     v# ::Float64# momentum
 end
 
+
 Momentum(α, β, n::Integer) = Momentum(α, β, zeros(n))
 
 function step!(M::Momentum, f, ∇f, x, debug=false) 
