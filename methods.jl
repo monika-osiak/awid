@@ -1,5 +1,9 @@
 module Methods
 
+using LinearAlgebra
+
+abstract type DescentMethod end
+
 mutable struct Momentum <: DescentMethod
     α# ::Array{Float64} # learning rate
     β# ::Array{Float64} # momentum decay
@@ -77,8 +81,6 @@ function step!(M::BFGS, f, ∇f, x)
     return x′
 end
 
-using LinearAlgebra
-
 mutable struct LBFGS
     m::Float64
     δs# ::Array{Float64}
@@ -128,5 +130,6 @@ function step!(M::LBFGS, f, ∇f, θ)
     end
     return θ′ 
 end
-  
+export Momentum, BFGS, LBFGS, step!, DescentMethod
+
 end
