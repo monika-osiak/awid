@@ -1,4 +1,4 @@
-include("./Functions.jl")
+include("functions.jl")
 include("methods.jl")
 using .Functions
 using .Methids

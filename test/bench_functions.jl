@@ -1,8 +1,8 @@
-include("./Functions.jl")
-using .Functions
+using Functions
 
 using BenchmarkTools
 using Random
+using Test
 
 n = 4
 x = zeros(n)
