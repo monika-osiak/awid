@@ -36,7 +36,11 @@ my_seed = 1620689075631
 Random.seed!(my_seed)
 rand!(x)
 println(x)
-pp(b) = show(stdout, MIME"text/plain"(), b)
+
+function pp(b, file="stats")
+    io = open(file, "w+");
+    show(io, MIME"text/plain"(), b)
+end
 
 momentum = Momentum(0.00000000000001, 0.01, length(x))
 info = @benchmark pts, err, i = optimalize(f, ∇f, x, momentum, 0.01, 100)
