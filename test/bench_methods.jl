@@ -28,14 +28,30 @@ function optimalize(f, ∇f, x₀, opt, e, i)
     pts, err, p
 end
 
+f = f_rosenbrock
+∇f = ∇f_rosenbrock 
+n = 2
+x = zeros(n)
+my_seed = 1620689075631
+Random.seed!(my_seed)
+rand!(x)
+println(x)
+pp(b) = show(stdout, MIME"text/plain"(), b)
 
 momentum = Momentum(0.00000000000001, 0.01, length(x))
-@benchmark pts, err, i = optimalize(f, ∇f, x, momentum, 0.01, 100)
+info = @benchmark pts, err, i = optimalize(f, ∇f, x, momentum, 0.01, 100)
+pp(info)
+println("*")
 
 bfgs = BFGS(length(x))
 info = @benchmark pts, err, i = optimalize(f, ∇f, x, bfgs, 0.0001, 100)
+pp(info)
+println("*")
 
+lbfgs = LBFGS()
 for i = 1:3
-    lbfgs = LBFGS(); init!(lbfgs, i)
-    @benchmark pts, err, i = optimalize(f_rosenbrock, ∇f_rosenbrock, x, lbfgs, 0.0001, 100)
+    init!(lbfgs, i)
+    info = @benchmark pts, err, i = optimalize(f, ∇f, x, lbfgs, 0.0001, 100)
+    pp(info)
+    println("*")
 end
