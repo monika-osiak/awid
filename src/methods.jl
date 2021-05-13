@@ -129,6 +129,48 @@ function step!(M::LBFGS, f, ∇f, θ)
     end
     return θ′ 
 end
-export Momentum, BFGS, LBFGS, step!, DescentMethod
+export Momentum, BFGS, LBFGS, step!, init!, DescentMethod
+
+function zoom(φ, φ′, αlo, αhi, c1=1e-4, c2=0.1, jmax=1000)
+    φ′0 = φ′(0.0) 
+    for j = 1:jmax
+        αj = 0.5(αlo + αhi) # bisection 
+        φαj = φ(αj)
+        if φαj > φ(0.0) + c1 * αj * φ′0 || φαj ≥ φ(αlo)
+            αhi = αj 
+        else
+            φ′αj = φ′(αj)
+            if abs(φ′αj) ≤ -c2 * φ′0
+                return αj
+            end
+            if φ′αj * (αhi - αlo) ≥ 0.0 
+                αhi = αlo
+            end
+            αlo = αj 
+        end
+    end
+    return 0.5(αlo + αhi) 
+end
+
+function line_search(φ, φ′, d, c1=1e-4, c2=0.1, ρ=0.1, αmax=100., jmax=1000)
+    αi, αj = 0.0, 1.0
+    φαi, φ0, φ′0 = φ(αi), φ(0.0), φ′(0.0) 
+    for j = 1:jmax
+        φαj = φ(αj)
+        if φαj > φ0 + c1 * αj * φ′0 || (φαj ≥ φαi && j > 1)
+            return zoom(φ, φ′, αi, αj)
+        end
+        φ′αj = φ′(αj)
+        if abs(φ′αj) ≤ -c2 * φ′0
+            return αj 
+        end
+        if φ′αj ≥ 0.0
+            return zoom(φ, φ′, αj, αi)
+        end
+        αi, αj = αj, ρ * αj + (1.0 - ρ) * αmax
+        φαi = φαj 
+    end
+    return αj 
+end
 
 end
