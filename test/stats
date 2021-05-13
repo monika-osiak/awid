@@ -1,0 +1,11 @@
+BenchmarkTools.Trial: 
+  memory estimate:  1.11 MiB
+  allocs estimate:  24121
+  --------------
+  minimum time:     896.600 μs (0.00% GC)
+  median time:      996.800 μs (0.00% GC)
+  mean time:        1.462 ms (11.50% GC)
+  maximum time:     20.311 ms (79.49% GC)
+  --------------
+  samples:          3383
+  evals/sample:     1
