@@ -13,12 +13,10 @@ end
 
 Momentum(α, β, n::Integer) = Momentum(α, β, zeros(n))
 
-function step!(M::Momentum, f, ∇f, x, debug=false) 
+function step!(M::Momentum, f, ∇f, x) 
     α, β, v, g = M.α, M.β, M.v, ∇f(x)
-    if debug
-        println("Gradient: ", g)
-        println(M)
-    end
+    @debug ("Gradient: ", g)
+    @debug "$(M)"
     v[:]  = β * v .- α * g
     return x + v
 end
