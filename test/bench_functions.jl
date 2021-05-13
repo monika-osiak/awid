@@ -1,4 +1,4 @@
-using Functions
+using OptimizationMethods.Functions
 
 using BenchmarkTools
 using Random

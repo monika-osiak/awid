@@ -1,7 +1,6 @@
-include("functions.jl")
-include("methods.jl")
-using .Functions
-using .Methids
+using OptimizationMethods.Functions
+# import optimization_methods:Functions
+using OptimizationMethods.Methods
 
 using BenchmarkTools
 using Random
