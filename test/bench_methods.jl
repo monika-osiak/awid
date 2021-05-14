@@ -36,8 +36,11 @@ Random.seed!(my_seed)
 rand!(x)
 println(x)
 
-function pp(b, file="stats")
-    io = open(file, "w+");
+file = "stats"
+io = open(file, "w+");
+
+function pp(b)
+    global io 
     show(io, MIME"text/plain"(), b)
 end
 
