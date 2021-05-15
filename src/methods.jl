@@ -1,4 +1,5 @@
 module Methods
+export Momentum, BFGS, LBFGS, step!, init!, DescentMethod
 
 using LinearAlgebra
 
@@ -13,7 +14,7 @@ end
 
 Momentum(α, β, n::Integer) = Momentum(α, β, zeros(n))
 
-function step!(M::Momentum, f, ∇f, x) 
+function step!(M::Momentum, f, ∇f, x::Array{Float64}) 
     α, β, v, g = M.α, M.β, M.v, ∇f(x)
     @debug ("Gradient: ", g)
     @debug "$(M)"
@@ -22,22 +23,22 @@ function step!(M::Momentum, f, ∇f, x)
 end
 
 mutable struct BFGS <: DescentMethod
-    Q
+    Q::Matrix{Float64}
 end
 
 BFGS(n::Integer) = BFGS(Matrix(1.0I, n, n))
 
-function strong_backtracking(f, ∇, x, d; α=1, β=1e-4, σ=0.1)
-    y0, g0, y_prev, α_prev = f(x), ∇(x) ⋅ d, NaN, 0
-    αlo, αhi = NaN, NaN
+function strong_backtracking(f, ∇, x::Array{Float64}, d::Array{Float64}; α=1.0, β=1e-4, σ=0.1)
+    y0::Float64, g0::Array{Float64}, y_prev::Float64, α_prev::Float64 = f(x), ∇(x) ⋅ d, NaN, 0.0
+    αlo::Float64, αhi::Float64 = NaN, NaN
   # bracket phase
     while true
-        y = f(x + α * d)
+        y::Float64 = f(x + α * d)
         if y > y0 + β * α * g0 || (!isnan(y_prev) && y ≥ y_prev)
             αlo, αhi = α_prev, α
             break
         end
-        g = ∇(x + α * d) ⋅ d
+        g::Array{Float64} = ∇(x + α * d) ⋅ d
         if abs(g) ≤ -σ * g0
             return α
         elseif g ≥ 0
@@ -47,14 +48,14 @@ function strong_backtracking(f, ∇, x, d; α=1, β=1e-4, σ=0.1)
         y_prev, α_prev, α = y, α, 2α
     end
   # zoom phase
-    ylo = f(x + αlo * d)
+    ylo::Float64 = f(x + αlo * d)
     while true
-        α = (αlo + αhi) / 2
-        y = f(x + α * d)
+        α::Float64 = (αlo + αhi) / 2
+        y::Float64 = f(x + α * d)
         if y > y0 + β * α * g0 || y ≥ ylo
             αhi = α
         else
-            g = ∇(x + α * d) ⋅ d
+            g::Array{Float64} = ∇(x + α * d) ⋅ d
             if abs(g) ≤ -σ * g0
                 return α
             elseif g * (αhi - αlo) ≥ 0
@@ -65,15 +66,15 @@ function strong_backtracking(f, ∇, x, d; α=1, β=1e-4, σ=0.1)
     end
 end
 
-function step!(M::BFGS, f, ∇f, x)
+function step!(M::BFGS, f, ∇f, x::Array{Float64})
     if f(x) ≈ 0.0
         return x
     end
 
-    Q, g = M.Q, ∇f(x)
+    Q, g::Array{Float64} = M.Q, ∇f(x)
     α = strong_backtracking(f, ∇f, x, -Q * g)
-    x′ = x + α * (-Q * g)
-    g′ = ∇f(x′)
+    x′::Array{Float64} = x + α * (-Q * g)
+    g′::Array{Float64} = ∇f(x′)
     δ = x′ - x
     γ = g′ - g
     Q[:] = Q - (δ * γ' * Q + Q * γ * δ') / (δ' * γ) + (1 + (γ' * Q * γ) / (δ' * γ))[1] * (δ * δ') / (δ' * γ)
@@ -96,7 +97,7 @@ function init!(M::LBFGS, m)
     return M
 end
 
-function step!(M::LBFGS, f, ∇f, θ) 
+function step!(M::LBFGS, f, ∇f, θ::Array{Float64}) 
     δs, γs, qs = M.δs, M.γs, M.qs 
     m, g = length(δs), ∇f(θ)
     d = -g # kierunek
@@ -129,7 +130,6 @@ function step!(M::LBFGS, f, ∇f, θ)
     end
     return θ′ 
 end
-export Momentum, BFGS, LBFGS, step!, init!, DescentMethod
 
 function zoom(φ, φ′, αlo, αhi, c1=1e-4, c2=0.1, jmax=1000)
     φ′0 = φ′(0.0) 

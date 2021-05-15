@@ -1,42 +1,42 @@
 {
   "L-BFGS-2": {
-    "minimum": 891201.0,
-    "median": 1.03215e6,
+    "minimum": 901800.0,
+    "median": 1.078399e6,
     "allocs": 24106,
     "memory": 1158288,
-    "mean": 1.5050931494217895e6,
-    "maximum": 1.4440899e7
+    "mean": 1.636896208985025e6,
+    "maximum": 1.83712e7
   },
   "L-BFGS-1": {
-    "minimum": 890600.0,
-    "median": 1.0216e6,
+    "minimum": 893100.0,
+    "median": 1.1338995e6,
     "allocs": 24091,
     "memory": 1157536,
-    "mean": 1.4620090370041444e6,
-    "maximum": 1.25807e7
+    "mean": 1.7922780385454546e6,
+    "maximum": 2.9642299e7
   },
   "Momentum": {
-    "minimum": 541701.0,
-    "median": 590400.0,
+    "minimum": 542700.0,
+    "median": 605000.0,
     "allocs": 2445,
     "memory": 181136,
-    "mean": 650899.257780696,
-    "maximum": 1.1244499e7
+    "mean": 724732.086950125,
+    "maximum": 1.25101e7
   },
   "BFGS": {
-    "minimum": 75500.0,
-    "median": 153200.0,
-    "allocs": 986,
-    "memory": 74768,
-    "mean": 247103.5066,
-    "maximum": 4.52586e7
+    "minimum": 61399.0,
+    "median": 147100.0,
+    "allocs": 791,
+    "memory": 65504,
+    "mean": 229103.5924,
+    "maximum": 1.5809501e7
   },
   "L-BFGS-3": {
-    "minimum": 897801.0,
-    "median": 1.3559e6,
+    "minimum": 902100.0,
+    "median": 1.0358e6,
     "allocs": 24121,
     "memory": 1159040,
-    "mean": 2.2285732574660634e6,
-    "maximum": 4.77095e7
+    "mean": 1.4991795885211055e6,
+    "maximum": 1.8607201e7
   }
 }
