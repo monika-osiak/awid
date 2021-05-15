@@ -4,6 +4,7 @@ using OptimizationMethods.Methods
 
 using BenchmarkTools
 using Random
+using .Utils
 
 function optimalize(f, ∇f, x₀, opt, e, i)
     pts = [x₀] # kolejne wektory x
@@ -42,22 +43,22 @@ io = open(file, "w+");
 function pp(b)
     global io 
     show(io, MIME"text/plain"(), b)
+    println(io, "*")
 end
 
 momentum = Momentum(0.00000000000001, 0.01, length(x))
 info = @benchmark pts, err, i = optimalize(f, ∇f, x, momentum, 0.01, 100)
-pp(info)
-println("*")
+add_test("Momentum",info)
 
 bfgs = BFGS(length(x))
 info = @benchmark pts, err, i = optimalize(f, ∇f, x, bfgs, 0.0001, 100)
-pp(info)
-println("*")
+add_test("BFGS",info)
 
 lbfgs = LBFGS()
 for i = 1:3
     init!(lbfgs, i)
     info = @benchmark pts, err, i = optimalize(f, ∇f, x, lbfgs, 0.0001, 100)
-    pp(info)
-    println("*")
+    add_test("L-BFGS-$(i)", info)
 end
+
+save_test()
