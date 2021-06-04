@@ -29,7 +29,7 @@ end
 BFGS(n::Integer) = BFGS(Matrix(1.0I, n, n))
 
 function strong_backtracking(f, ∇, x::Array{Float64}, d::Array{Float64}; α=1.0, β=1e-4, σ=0.1)
-    y0::Float64, g0::Array{Float64}, y_prev::Float64, α_prev::Float64 = f(x), ∇(x) ⋅ d, NaN, 0.0
+    y0::Float64, g0::Float64, y_prev::Float64, α_prev::Float64  = f(x), ∇(x) ⋅ d, NaN, 0.0
     αlo::Float64, αhi::Float64 = NaN, NaN
   # bracket phase
     while true
@@ -38,24 +38,24 @@ function strong_backtracking(f, ∇, x::Array{Float64}, d::Array{Float64}; α=1.
             αlo, αhi = α_prev, α
             break
         end
-        g::Array{Float64} = ∇(x + α * d) ⋅ d
+        g = ∇(x + α * d) ⋅ d
         if abs(g) ≤ -σ * g0
             return α
         elseif g ≥ 0
-      αlo, αhi = α, α_prev
+      αlo, αhi  = α, α_prev
       break
         end
-        y_prev, α_prev, α = y, α, 2α
+        y_prev, α_prev, α  = y, α, 2α
     end
   # zoom phase
     ylo::Float64 = f(x + αlo * d)
     while true
-        α::Float64 = (αlo + αhi) / 2
-        y::Float64 = f(x + α * d)
+        α = (αlo + αhi) / 2
+        y = f(x + α * d)
         if y > y0 + β * α * g0 || y ≥ ylo
-            αhi = α
+            αhi  = α
         else
-            g::Array{Float64} = ∇(x + α * d) ⋅ d
+            g  = ∇(x + α * d) ⋅ d
             if abs(g) ≤ -σ * g0
                 return α
             elseif g * (αhi - αlo) ≥ 0
@@ -66,7 +66,7 @@ function strong_backtracking(f, ∇, x::Array{Float64}, d::Array{Float64}; α=1.
     end
 end
 
-function step!(M::BFGS, f, ∇f, x::Array{Float64})
+function step!(M::BFGS, f, ∇f, x::Array{Float64})::Array{Float64}
     if f(x) ≈ 0.0
         return x
     end
@@ -83,9 +83,9 @@ end
 
 mutable struct LBFGS
     m::Float64
-    δs# ::Array{Float64}
-    γs# ::Array{Float64}
-    qs# ::Array{Float64}
+    δs::Array{Array{Float64}}
+    γs::Array{Array{Float64}}
+    qs::Array{Array{Float64}}
     LBFGS() = new()
 end
 
@@ -121,7 +121,8 @@ function step!(M::LBFGS, f, ∇f, θ::Array{Float64})
     φ = α -> f(θ + α * d); φ′ = α -> ∇f(θ + α * d) ⋅ d 
     α = line_search(φ, φ′, d)
     θ′ = θ + α * d; g′ = ∇f(θ′) # nowy wektor
-    δ = θ′ - θ;γ = g′ - g
+    δ = θ′ - θ
+    γ = g′ - g
     push!(δs, δ);
     push!(γs, γ);
     push!(qs, zero(θ)) 
