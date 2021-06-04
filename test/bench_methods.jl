@@ -38,9 +38,6 @@ iters = 100
 err = 0.0001
 rand!(x)
 
-file = "stats"
-io = open(file, "w+");
-
 add_metadata("function", "rosenbrock")
 
 momentum = Momentum(0.00000000000001, 0.01, length(x))
