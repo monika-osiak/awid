@@ -1,9 +1,6 @@
-using OptimizationMethods.Functions
-# import optimization_methods:Functions
 using OptimizationMethods.Methods
 
 using BenchmarkTools
-using Random
 using .Utils
 
 function optimalize(f, ∇f, x₀, opt, e, i)
@@ -27,16 +24,6 @@ function optimalize(f, ∇f, x₀, opt, e, i)
     
     pts, err, p
 end
-
-my_seed = 1620689075631
-Random.seed!(my_seed)
-f = f_rosenbrock
-∇f = ∇f_rosenbrock 
-n = 2
-x = zeros(n)
-iters = 100
-err = 0.0001
-rand!(x)
 
 add_metadata("function", "rosenbrock")
 
