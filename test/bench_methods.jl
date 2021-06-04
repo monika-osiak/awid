@@ -41,12 +41,6 @@ rand!(x)
 file = "stats"
 io = open(file, "w+");
 
-function pp(b)
-    global io 
-    show(io, MIME"text/plain"(), b)
-    println(io, "*")
-end
-
 add_metadata("function", "rosenbrock")
 
 momentum = Momentum(0.00000000000001, 0.01, length(x))
