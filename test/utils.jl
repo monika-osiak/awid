@@ -1,5 +1,5 @@
 module Utils
-export save_test, add_test
+export save_test, add_test, add_metadata
 
 using BenchmarkTools
 using JSON

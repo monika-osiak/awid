@@ -29,34 +29,38 @@ end
     abstract type DescentMethod end
 
     mutable struct Momentum <: DescentMethod
-    α# ::Array{Float64} # learning rate
-    β# ::Array{Float64} # momentum decay
-    v# ::Float64# momentum
+    α# ::Vector{Float64} # learning rate
+    β# ::Vector{Float64} # momentum decay
+    v# ::Vector{Float64}# momentum
 end
 
 
-    Momentum(α, β, n::Integer) = Momentum(α, β, zeros(n))
+# Momentum(α, β, n) = Momentum(α, β, zeros(n))
+# Momentum(α, β, n::Vector{Float64}) = Momentum(α, β, n)
 
-    function step!(M::Momentum, f, ∇f, x::Array{Float64}) 
+
+function step!(M::Momentum, f, ∇f, x) 
     α, β, v, g = M.α, M.β, M.v, ∇f(x)
-    @debug ("Gradient: ", g)
-    @debug "$(M)"
+    # @debug "Gradient: $g"
+    @debug M
+    @debug v
+    # @debug "Parameters: ($α, $β, $v, $g)"
     v[:]  = β * v .- α * g
     return x + v
 end
 
-    mutable struct BFGS <: DescentMethod
-    Q::Matrix{Float64}
+mutable struct BFGS <: DescentMethod
+    Q
 end
 
-    BFGS(n::Integer) = BFGS(Matrix(1.0I, n, n))
+BFGS(n) = BFGS(Matrix(1.0I, n, n))
 
-    function strong_backtracking(f, ∇, x::Array{Float64}, d::Array{Float64}; α=1.0, β=1e-4, σ=0.1)
-    y0::Float64, g0::Float64, y_prev::Float64, α_prev::Float64  = f(x), ∇(x) ⋅ d, NaN, 0.0
-    αlo::Float64, αhi::Float64 = NaN, NaN
+function strong_backtracking(f, ∇, x, d; α=1.0, β=1e-4, σ=0.1)
+    y0, g0, y_prev, α_prev  = f(x), ∇(x) ⋅ d, NaN, 0.0
+    αlo, αhi = NaN, NaN
   # bracket phase
     while true
-        y::Float64 = f(x + α * d)
+        y = f(x + α * d)
         if y > y0 + β * α * g0 || (!isnan(y_prev) && y ≥ y_prev)
             αlo, αhi = α_prev, α
             break
@@ -71,7 +75,7 @@ end
         y_prev, α_prev, α  = y, α, 2α
     end
   # zoom phase
-    ylo::Float64 = f(x + αlo * d)
+    ylo = f(x + αlo * d)
     while true
         α = (αlo + αhi) / 2
         y = f(x + α * d)
@@ -89,26 +93,26 @@ end
     end
 end
 
-    function step!(M::BFGS, f, ∇f, x::Array{Float64})::Array{Float64}
+function step!(M::BFGS, f, ∇f, x)
     if f(x) ≈ 0.0
         return x
     end
 
-    Q, g::Array{Float64} = M.Q, ∇f(x)
+    Q, g = M.Q, ∇f(x)
     α = strong_backtracking(f, ∇f, x, -Q * g)
-    x′::Array{Float64} = x + α * (-Q * g)
-    g′::Array{Float64} = ∇f(x′)
+    x′ = x + α * (-Q * g)
+    g′ = ∇f(x′)
     δ = x′ - x
     γ = g′ - g
     Q[:] = Q - (δ * γ' * Q + Q * γ * δ') / (δ' * γ) + (1 + (γ' * Q * γ) / (δ' * γ))[1] * (δ * δ') / (δ' * γ)
     return x′
 end
 
-    mutable struct LBFGS
-    m::Float64
-    δs::Array{Array{Float64}}
-    γs::Array{Array{Float64}}
-    qs::Array{Array{Float64}}
+mutable struct LBFGS
+    m
+    δs
+    γs
+    qs
     LBFGS() = new()
 end
 
@@ -120,7 +124,7 @@ end
     return M
 end
 
-    function step!(M::LBFGS, f, ∇f, θ::Array{Float64}) 
+    function step!(M::LBFGS, f, ∇f, θ) 
     δs, γs, qs = M.δs, M.γs, M.qs 
     m, g = length(δs), ∇f(θ)
     d = -g # kierunek
