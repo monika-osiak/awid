@@ -1,4 +1,3 @@
-using Optim
 
 # optimaze(f,∇f, )
 l = optimize(f, ∇f, x, method=GradientDescent(), iterations=iters

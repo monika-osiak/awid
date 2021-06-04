@@ -1,20 +1,43 @@
 module Methods
-export Momentum, BFGS, LBFGS, step!, init!, DescentMethod
+export Momentum, BFGS, LBFGS, step!, init!, DescentMethod, optimalize
 
 using LinearAlgebra
 
-abstract type DescentMethod end
+function optimalize(f, ∇f, x₀, opt, e, i)
+    pts = [x₀] # kolejne wektory x
+    err = Float64[] # kolejne wartości f. straty
+    p = 0
+    while true
+        prev = f(pts[end])
+        push!(err, prev) # odłóż wynik funkcji dla najnowszego wektora x (miara błędu)
+        @debug   "Iteracja p= $(p)"
+        @debug   "Wektor x: $(pts[end])"
+        @debug   "Error: $(err[end])"
+        if prev < e || isnan(prev)  || p > i 
+            break
+        end
+        if length(pts) > 1 && pts[end] == pts[end - 1]
+            break # when we stop to progress
+        end
+        push!(pts, step!(opt, f, ∇f, pts[end]))
+        p += 1
+    end
+    
+    pts, err, p
+end
 
-mutable struct Momentum <: DescentMethod
+    abstract type DescentMethod end
+
+    mutable struct Momentum <: DescentMethod
     α# ::Array{Float64} # learning rate
     β# ::Array{Float64} # momentum decay
     v# ::Float64# momentum
 end
 
 
-Momentum(α, β, n::Integer) = Momentum(α, β, zeros(n))
+    Momentum(α, β, n::Integer) = Momentum(α, β, zeros(n))
 
-function step!(M::Momentum, f, ∇f, x::Array{Float64}) 
+    function step!(M::Momentum, f, ∇f, x::Array{Float64}) 
     α, β, v, g = M.α, M.β, M.v, ∇f(x)
     @debug ("Gradient: ", g)
     @debug "$(M)"
@@ -22,13 +45,13 @@ function step!(M::Momentum, f, ∇f, x::Array{Float64})
     return x + v
 end
 
-mutable struct BFGS <: DescentMethod
+    mutable struct BFGS <: DescentMethod
     Q::Matrix{Float64}
 end
 
-BFGS(n::Integer) = BFGS(Matrix(1.0I, n, n))
+    BFGS(n::Integer) = BFGS(Matrix(1.0I, n, n))
 
-function strong_backtracking(f, ∇, x::Array{Float64}, d::Array{Float64}; α=1.0, β=1e-4, σ=0.1)
+    function strong_backtracking(f, ∇, x::Array{Float64}, d::Array{Float64}; α=1.0, β=1e-4, σ=0.1)
     y0::Float64, g0::Float64, y_prev::Float64, α_prev::Float64  = f(x), ∇(x) ⋅ d, NaN, 0.0
     αlo::Float64, αhi::Float64 = NaN, NaN
   # bracket phase
@@ -66,7 +89,7 @@ function strong_backtracking(f, ∇, x::Array{Float64}, d::Array{Float64}; α=1.
     end
 end
 
-function step!(M::BFGS, f, ∇f, x::Array{Float64})::Array{Float64}
+    function step!(M::BFGS, f, ∇f, x::Array{Float64})::Array{Float64}
     if f(x) ≈ 0.0
         return x
     end
@@ -81,7 +104,7 @@ function step!(M::BFGS, f, ∇f, x::Array{Float64})::Array{Float64}
     return x′
 end
 
-mutable struct LBFGS
+    mutable struct LBFGS
     m::Float64
     δs::Array{Array{Float64}}
     γs::Array{Array{Float64}}
@@ -89,7 +112,7 @@ mutable struct LBFGS
     LBFGS() = new()
 end
 
-function init!(M::LBFGS, m) 
+    function init!(M::LBFGS, m) 
     M.m = m
     M.δs = [] 
     M.γs = [] 
@@ -97,7 +120,7 @@ function init!(M::LBFGS, m)
     return M
 end
 
-function step!(M::LBFGS, f, ∇f, θ::Array{Float64}) 
+    function step!(M::LBFGS, f, ∇f, θ::Array{Float64}) 
     δs, γs, qs = M.δs, M.γs, M.qs 
     m, g = length(δs), ∇f(θ)
     d = -g # kierunek
@@ -118,9 +141,14 @@ function step!(M::LBFGS, f, ∇f, θ::Array{Float64})
         end
         d = -z; # rekonstrukcja kierunku
     end
-    φ = α -> f(θ + α * d); φ′ = α -> ∇f(θ + α * d) ⋅ d 
+    φ = α -> f(θ + α * d)
+    φ′ = α -> ∇f(θ + α * d) ⋅ d 
     α = line_search(φ, φ′, d)
-    θ′ = θ + α * d; g′ = ∇f(θ′) # nowy wektor
+    @debug "Point: $θ"
+    @debug "line_search: $α"
+    θ′ = θ + α * d
+    @debug "New Point: $θ′"
+    g′ = ∇f(θ′) # nowy wektor
     δ = θ′ - θ
     γ = g′ - g
     push!(δs, δ);
@@ -132,7 +160,7 @@ function step!(M::LBFGS, f, ∇f, θ::Array{Float64})
     return θ′ 
 end
 
-function zoom(φ, φ′, αlo, αhi, c1=1e-4, c2=0.1, jmax=1000)
+    function zoom(φ, φ′, αlo, αhi, c1=1e-4, c2=0.1, jmax=1000)
     φ′0 = φ′(0.0) 
     for j = 1:jmax
         αj = 0.5(αlo + αhi) # bisection 
@@ -153,7 +181,7 @@ function zoom(φ, φ′, αlo, αhi, c1=1e-4, c2=0.1, jmax=1000)
     return 0.5(αlo + αhi) 
 end
 
-function line_search(φ, φ′, d, c1=1e-4, c2=0.1, ρ=0.1, αmax=100., jmax=1000)
+    function line_search(φ, φ′, d, c1=1e-4, c2=0.1, ρ=0.1, αmax=100., jmax=1000)
     αi, αj = 0.0, 1.0
     φαi, φ0, φ′0 = φ(αi), φ(0.0), φ′(0.0) 
     for j = 1:jmax
