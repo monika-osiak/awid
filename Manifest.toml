@@ -94,6 +94,11 @@ git-tree-sha1 = "8b16199c80d7a0bd7ac1d05d52b51e3e0a9f8c0f"
 uuid = "ad2082ca-a69e-11e9-38fa-e96309a31fe4"
 version = "0.1.2"
 
+[[FastClosures]]
+git-tree-sha1 = "acebe244d53ee1b461970f8910c235b259e772ef"
+uuid = "9aa1b823-49e4-5ca5-8b0f-3971ec8bab6a"
+version = "0.3.2"
+
 [[FillArrays]]
 deps = ["LinearAlgebra", "Random", "SparseArrays"]
 git-tree-sha1 = "31939159aeb8ffad1d4d8ee44d07f8558273120a"

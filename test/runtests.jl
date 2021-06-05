@@ -40,7 +40,7 @@ if "moment" in test_set
     mom = zeros(length(x))
     momentum = Methods.Momentum(l_rate, 0.01, mom)
     pts, errs, i = optimalize(f, ∇f, x, momentum, eps(), iters)
-    # @test pts[end] == [1.0000000002538125, 1.0000000005044984]
+    @test pts[end] == [0.3122846156075936, 0.6981553088628102]
     @info "Momentum"
     @info pts[end]
     @info errs[end], i
@@ -53,8 +53,9 @@ if "gd" in test_set
     mom = zeros(length(x))
     gd = Methods.GradientDescent(l_rate)
     pts, errs, i = optimalize(f, ∇f, x, gd, eps(), iters)
+    @test pts[end] ==  [0.3115209459667753, 0.6993648285144705]
     @info "GradientDescent"
-    # @test pts[end] == [1.0000000002538125, 1.0000000005044984]
+    @test pts[end] == []
     @info pts[end]
     @info errs[end], i
     # end
@@ -71,7 +72,7 @@ if "bfgs" in test_set
 end
 
 if "lbfgs" in test_set
-    const lbfgs_res = [
+    lbfgs_res = [
     [0.5262262899257493, 0.27691410820901874],
     [1.000000000000055, 0.9999999999989565],
     [1.0000000000474711, 0.9999999998824036]
