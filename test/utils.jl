@@ -8,8 +8,8 @@ using JSON
 dic = Dict()
 
 function save_test()
-    io = open(file, "w+");
     file = "stats.json"
+    io = open(file, "w+");
     JSON.print(io, dic, 2) 
 end
 

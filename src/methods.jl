@@ -2,6 +2,7 @@ module Methods
 export Momentum, BFGS, LBFGS, step!, init!, DescentMethod, optimalize
 
 using LinearAlgebra
+using ExportAll
 
 function optimalize(f, ∇f, x₀, opt, e, i)
     pts = [x₀] # kolejne wektory x
@@ -35,7 +36,7 @@ end
 end
 
 
-# Momentum(α, β, n) = Momentum(α, β, zeros(n))
+Momentum(α, β, n) = Momentum(α, β, zeros(n))
 # Momentum(α, β, n::Vector{Float64}) = Momentum(α, β, n)
 
 
@@ -43,7 +44,6 @@ function step!(M::Momentum, f, ∇f, x)
     α, β, v, g = M.α, M.β, M.v, ∇f(x)
     # @debug "Gradient: $g"
     @debug M
-    @debug v
     # @debug "Parameters: ($α, $β, $v, $g)"
     v[:]  = β * v .- α * g
     return x + v
@@ -53,7 +53,7 @@ mutable struct BFGS <: DescentMethod
     Q
 end
 
-BFGS(n) = BFGS(Matrix(1.0I, n, n))
+BFGS(n::Int64) = BFGS(Matrix(1.0I, n, n))
 
 function strong_backtracking(f, ∇, x, d; α=1.0, β=1e-4, σ=0.1)
     y0, g0, y_prev, α_prev  = f(x), ∇(x) ⋅ d, NaN, 0.0
@@ -206,4 +206,5 @@ end
     return αj 
 end
 
+@exportAll
 end

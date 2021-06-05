@@ -1,0 +1,43 @@
+{
+  "L-BFGS-2": {
+    "minimum": 882100.0,
+    "median": 979450.0,
+    "allocs": 23109,
+    "memory": 1142672,
+    "mean": 1.334654011847065e6,
+    "maximum": 1.576e7
+  },
+  "function": "rosenbrock",
+  "L-BFGS-1": {
+    "minimum": 869100.0,
+    "median": 969500.0,
+    "allocs": 23094,
+    "memory": 1141920,
+    "mean": 1.2941305946791861e6,
+    "maximum": 1.52502e7
+  },
+  "Momentum": {
+    "minimum": 487300.0,
+    "median": 533700.0,
+    "allocs": 2243,
+    "memory": 166592,
+    "mean": 625009.9657664511,
+    "maximum": 2.57669e7
+  },
+  "BFGS": {
+    "minimum": 85100.0,
+    "median": 156500.0,
+    "allocs": 1015,
+    "memory": 76352,
+    "mean": 211997.57,
+    "maximum": 3.46421e7
+  },
+  "L-BFGS-3": {
+    "minimum": 887000.0,
+    "median": 979750.0,
+    "allocs": 23124,
+    "memory": 1143424,
+    "mean": 1.4322341816078657e6,
+    "maximum": 3.65865e7
+  }
+}

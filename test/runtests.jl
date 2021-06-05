@@ -9,9 +9,9 @@ const benchmark_varialbe = "TEST_PERFORMANCE"
 include("./utils.jl")
 
 const test_set = Set([
-    "moment"
-    # "bfgs",
-    # "lbfgs"
+    "moment",
+    "bfgs",
+    "lbfgs"
 ])
 
 const my_seed = 1620689075631
@@ -33,12 +33,15 @@ if "omtim_bfgs" in test_set
 end
 
 if "moment" in test_set
-    mom::Vector{Float64} = zeros(length(x))
-    momentum = Momentum(0.00000000000001, 0.01, mom)
-    pts, errs, i = optimalize(f, ∇f, x, momentum, eps(), iters)
+    logger = SimpleLogger(stdout, Logging.Debug)
+    with_logger(logger) do
+        mom = zeros(length(x))
+        momentum = Momentum(0.00000000000001, 0.01, mom)
+        pts, errs, i = optimalize(f, ∇f, x, momentum, eps(), iters)
     # @test pts[end] == [1.0000000002538125, 1.0000000005044984]
-    @info pts[end]
-    @info errs[end], i
+        @info pts[end]
+        @info errs[end], i
+    end
 end
 
 # in order to force max iterations
@@ -70,5 +73,5 @@ if "lbfgs" in test_set
 end
 if haskey(ENV, benchmark_varialbe)
     include("./bench_methods.jl")
-    include("./bench_functions.jl")
+    # include("./bench_functions.jl")
 end

@@ -88,6 +88,12 @@ version = "0.8.4"
 deps = ["ArgTools", "LibCURL", "NetworkOptions"]
 uuid = "f43a241f-c20a-4ad4-852c-f6b1247861c6"
 
+[[ExportAll]]
+deps = ["Test"]
+git-tree-sha1 = "8b16199c80d7a0bd7ac1d05d52b51e3e0a9f8c0f"
+uuid = "ad2082ca-a69e-11e9-38fa-e96309a31fe4"
+version = "0.1.2"
+
 [[FillArrays]]
 deps = ["LinearAlgebra", "Random", "SparseArrays"]
 git-tree-sha1 = "31939159aeb8ffad1d4d8ee44d07f8558273120a"

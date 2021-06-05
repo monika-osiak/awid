@@ -5,7 +5,9 @@ using .Utils
 
 add_metadata("function", "rosenbrock")
 
-momentum = Momentum(0.00000000000001, 0.01, length(x))
+mom = zeros(length(x))
+momentum = Momentum(0.00000000000001, 0.01, mom)
+
 info = @benchmark pts, errs, i = optimalize(f, ∇f, x, momentum, err, iters)
 add_test("Momentum",info)
 
