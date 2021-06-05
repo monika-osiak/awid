@@ -1,5 +1,5 @@
 module Methods
-export Momentum, BFGS, LBFGS, step!, init!, DescentMethod, optimalize
+export Momentum, BFGS, LBFGS, step!, init!, DescentMethod, optimalize, GradientDescent
 
 using LinearAlgebra
 using ExportAll
@@ -27,7 +27,16 @@ function optimalize(f, ∇f, x₀::Vector{Float64}, opt, e::Float64, i::Int64)# 
     pts, err, p
 end
 
-    abstract type DescentMethod end
+abstract type DescentMethod end
+
+struct GradientDescent <: DescentMethod 
+    α::Float64 # learning rate
+end
+
+function step!(M::GradientDescent, f, ∇f, θ::Vector{Float64})::Vector{Float64}
+    α::Float64, g::Vector{Float64} = M.α, ∇f(θ)
+    return θ - α * g
+end
 
 mutable struct Momentum <: DescentMethod
     α# ::Float64 # learning rate

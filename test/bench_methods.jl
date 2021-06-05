@@ -6,10 +6,14 @@ using .Utils
 add_metadata("function", "rosenbrock")
 
 mom = zeros(length(x))
-momentum = Momentum(0.00000000000001, 0.01, mom)
+momentum = Methods.Momentum(l_rate, 0.01, mom)
 
 info = @benchmark pts, errs, i = optimalize(f, ∇f, x, momentum, err, iters)
 add_test("Momentum",info)
+
+gd = Methods.GradientDescent(l_rate)
+info = @benchmark pts, errs, i = optimalize(f, ∇f, x, gd, err, iters)
+add_test("GradientDescent",info)
 
 bfgs = Methods.BFGS(length(x))
 info = @benchmark pts, errs, i = optimalize(f, ∇f, x, bfgs, err, iters)
