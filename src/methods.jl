@@ -4,12 +4,12 @@ export Momentum, BFGS, LBFGS, step!, init!, DescentMethod, optimalize
 using LinearAlgebra
 using ExportAll
 
-function optimalize(f, ∇f, x₀, opt, e, i)
-    pts = [x₀] # kolejne wektory x
-    err = Float64[] # kolejne wartości f. straty
+function optimalize(f, ∇f, x₀::Vector{Float64}, opt, e::Float64, i::Int64)# ::Tuple{Vector{Vector{Float64}},Vector{Float64},Int64}
+    pts::Vector{Vector{Float64}} = [x₀] # kolejne wektory x
+    err::Vector{Float64} = Float64[] # kolejne wartości f. straty
     p = 0
     while true
-        prev = f(pts[end])
+        prev::Float64 = f(pts[end])
         push!(err, prev) # odłóż wynik funkcji dla najnowszego wektora x (miara błędu)
         @debug   "Iteracja p= $(p)"
         @debug   "Wektor x: $(pts[end])"
@@ -29,22 +29,22 @@ end
 
     abstract type DescentMethod end
 
-    mutable struct Momentum <: DescentMethod
-    α# ::Vector{Float64} # learning rate
-    β# ::Vector{Float64} # momentum decay
+mutable struct Momentum <: DescentMethod
+    α# ::Float64 # learning rate
+    β# ::Float64 # momentum decay
     v# ::Vector{Float64}# momentum
 end
 
 
-Momentum(α, β, n) = Momentum(α, β, zeros(n))
+Momentum(α, β, n::Int64) = Momentum(α, β, zeros(n))
 # Momentum(α, β, n::Vector{Float64}) = Momentum(α, β, n)
 
 
-function step!(M::Momentum, f, ∇f, x) 
+function step!(M::Momentum, f, ∇f, x::Vector{Float64})::Vector{Float64}
     α, β, v, g = M.α, M.β, M.v, ∇f(x)
-    # @debug "Gradient: $g"
+    @debug "Gradient: $g"
     @debug M
-    # @debug "Parameters: ($α, $β, $v, $g)"
+    @debug "Parameters: ($α, $β, $v, $g)"
     v[:]  = β * v .- α * g
     return x + v
 end
@@ -55,7 +55,7 @@ end
 
 BFGS(n::Int64) = BFGS(Matrix(1.0I, n, n))
 
-function strong_backtracking(f, ∇, x, d; α=1.0, β=1e-4, σ=0.1)
+function strong_backtracking(f, ∇, x::Vector{Float64}, d; α=1.0, β=1e-4, σ=0.1)
     y0, g0, y_prev, α_prev  = f(x), ∇(x) ⋅ d, NaN, 0.0
     αlo, αhi = NaN, NaN
   # bracket phase
@@ -93,7 +93,7 @@ function strong_backtracking(f, ∇, x, d; α=1.0, β=1e-4, σ=0.1)
     end
 end
 
-function step!(M::BFGS, f, ∇f, x)
+function step!(M::BFGS, f, ∇f, x::Vector{Float64})::Vector{Float64}
     if f(x) ≈ 0.0
         return x
     end
@@ -101,7 +101,7 @@ function step!(M::BFGS, f, ∇f, x)
     Q, g = M.Q, ∇f(x)
     α = strong_backtracking(f, ∇f, x, -Q * g)
     x′ = x + α * (-Q * g)
-    g′ = ∇f(x′)
+    g′::Vector{Float64} = ∇f(x′)
     δ = x′ - x
     γ = g′ - g
     Q[:] = Q - (δ * γ' * Q + Q * γ * δ') / (δ' * γ) + (1 + (γ' * Q * γ) / (δ' * γ))[1] * (δ * δ') / (δ' * γ)
@@ -124,7 +124,7 @@ end
     return M
 end
 
-    function step!(M::LBFGS, f, ∇f, θ) 
+    function step!(M::LBFGS, f, ∇f, θ::Vector{Float64})::Vector{Float64}
     δs, γs, qs = M.δs, M.γs, M.qs 
     m, g = length(δs), ∇f(θ)
     d = -g # kierunek
@@ -164,7 +164,7 @@ end
     return θ′ 
 end
 
-    function zoom(φ, φ′, αlo, αhi, c1=1e-4, c2=0.1, jmax=1000)
+function zoom(φ, φ′, αlo, αhi, c1=1e-4, c2=0.1, jmax=1000)
     φ′0 = φ′(0.0) 
     for j = 1:jmax
         αj = 0.5(αlo + αhi) # bisection 
@@ -185,7 +185,7 @@ end
     return 0.5(αlo + αhi) 
 end
 
-    function line_search(φ, φ′, d, c1=1e-4, c2=0.1, ρ=0.1, αmax=100., jmax=1000)
+function line_search(φ, φ′, d, c1=1e-4, c2=0.1, ρ=0.1, αmax=100., jmax=1000)
     αi, αj = 0.0, 1.0
     φαi, φ0, φ′0 = φ(αi), φ(0.0), φ′(0.0) 
     for j = 1:jmax

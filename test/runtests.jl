@@ -9,9 +9,9 @@ const benchmark_varialbe = "TEST_PERFORMANCE"
 include("./utils.jl")
 
 const test_set = Set([
-    "moment",
-    "bfgs",
-    "lbfgs"
+    # "moment",
+    # "bfgs",
+    # "lbfgs"
 ])
 
 const my_seed = 1620689075631
@@ -34,14 +34,14 @@ end
 
 if "moment" in test_set
     logger = SimpleLogger(stdout, Logging.Debug)
-    with_logger(logger) do
-        mom = zeros(length(x))
-        momentum = Momentum(0.00000000000001, 0.01, mom)
-        pts, errs, i = optimalize(f, ∇f, x, momentum, eps(), iters)
+    # with_logger(logger) do
+    mom = zeros(length(x))
+    momentum = Momentum(0.00000000000001, 0.01, mom)
+    pts, errs, i = optimalize(f, ∇f, x, momentum, eps(), iters)
     # @test pts[end] == [1.0000000002538125, 1.0000000005044984]
-        @info pts[end]
-        @info errs[end], i
-    end
+    @info pts[end]
+    @info errs[end], i
+    # end
 end
 
 # in order to force max iterations
