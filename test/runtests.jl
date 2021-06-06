@@ -16,8 +16,9 @@ const test_set = Set([
 const benchmark_varialbe = "TEST_PERFORMANCE"
 const my_seed = 1620689075631 # Ziarno do generatora licz losowych
 Random.seed!(my_seed)
-const f = f_rosenbrock # funkcjia minimalizowana
+const f = f_rosenbrock # funkcjia minimalizowana alternatywą jest f_ackley 
 const ∇f = ∇f_rosenbrock # funkcjia zwracająca gradient funkcji minimalizowanej
+                       #  wszystkie są zdefiniwane w .\src\functions.jl 
 const f_name = "rosenbrock" # nazwa  funkcji
 const n = 2 # liczba zmiennych
 const iters = 100 # max iteracji
