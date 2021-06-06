@@ -37,8 +37,8 @@ struct GradientDescent <: DescentMethod
 end
 
 function step!(M::GradientDescent, f, ∇f, θ::Vector{Float64})::Vector{Float64}
-    α::Float64, g::Vector{Float64} = M.α, ∇f(θ)
-    return θ - α * g
+    # α::Float64, g::Vector{Float64} = M.α, ∇f(θ)
+    return θ .- M.α .* ∇f(θ)
 end
 
 mutable struct Momentum <: DescentMethod
@@ -57,8 +57,8 @@ function step!(M::Momentum, f, ∇f, x::Vector{Float64})::Vector{Float64}
     @debug "Gradient: $g"
     @debug M
     @debug "Parameters: ($α, $β, $v, $g)"
-    v[:]  = β * v .- α * g
-    return x + v
+    v .= β .* v .- α .* g
+    return x .+ v
 end
 
 mutable struct BFGS <: DescentMethod
