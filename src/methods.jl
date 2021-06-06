@@ -72,6 +72,7 @@ function strong_backtracking(f, ∇, x::Vector{Float64}, d; α=1.0, β=1e-4, σ=
     y_prev::Float64, α_prev::Float64  = NaN, 0.0
     αlo::Float64, αhi::Float64 = NaN, NaN
   # bracket phase
+    # @debug "Before first inf loop"
     while true
         y::Float64 = f(x + α * d)
         if y > y0 + β * α * g0 || (!isnan(y_prev) && y ≥ y_prev)
@@ -89,39 +90,71 @@ function strong_backtracking(f, ∇, x::Vector{Float64}, d; α=1.0, β=1e-4, σ=
     end
   # zoom phase
     ylo::Float64 = f(x + αlo * d)
+    @debug "Before second inf loop"
+    α_old = NaN
     while true
+        @debug "Start loop"
         α = (αlo + αhi) / 2
-        y = f(x + α * d)
-        if y > y0 + β * α * g0 || y ≥ ylo
-            αhi  = α
+        if α == α_old
+            return α
         else
+            α_old = α
+        end
+        @debug "α: $α"
+        y = f(x + α * d)
+        @debug "y: $y"
+        @debug "y > y0 + β * α * g0 $(y > y0 + β * α * g0)"
+        @debug "y ≥ ylo $(y ≥ ylo)"
+        if y > y0 + β * α * g0 || y ≥ ylo
+            @debug "first case"
+            @debug "ylo $ylo"
+            αhi  = α
+            @debug "ahi $αhi"
+        else
+            @debug "second case"
             g  = ∇(x + α * d) ⋅ d
+            @debug "g: $g"
+            @debug "abs(g): $(abs(g))"
+            @debug "-σ * g0 : $(-σ * g0)"
             if abs(g) ≤ -σ * g0
+                @debug "second case inner first case"
                 return α
             elseif g * (αhi - αlo) ≥ 0
-        αhi = αlo
+                @debug "second case inner second case"
+                αhi = αlo
             end
             αlo = α
+            @debug "α: $α"
+            @debug "αlo: $αlo"
+            @debug "nether case"
         end
     end
 end
 
-function step!(M::BFGS, f, ∇f, x::Vector{Float64})::Vector{Float64}
+    function step!(M::BFGS, f, ∇f, x::Vector{Float64})::Vector{Float64}
     if f(x) ≈ 0.0
         return x
     end
 
     Q::Matrix{Float64}, g::Vector{Float64} = M.Q, ∇f(x)
+    # @debug "Q: $Q"
+    # @debug "g: $g"
     α = strong_backtracking(f, ∇f, x, -Q * g)
+    # @debug "α: $α"
     x′::Vector{Float64} = x + α * (-Q * g)
+    # @debug "x': $x′"
     g′::Vector{Float64} = ∇f(x′)
+    # @debug "g: $g′"
     δ::Vector{Float64} = x′ - x
+    # @debug "δ: $δ"
     γ::Vector{Float64} = g′ - g
+    # @debug "γ: $γ"
     Q[:] = Q - (δ * γ' * Q + Q * γ * δ') / (δ' * γ) + (1 + (γ' * Q * γ) / (δ' * γ))[1] * (δ * δ') / (δ' * γ)
+    # @debug "new Q: $Q"
     return x′
 end
 
-mutable struct LBFGS
+    mutable struct LBFGS
     m::Int64
     δs::Vector{Vector{Float64}}
     γs::Vector{Vector{Float64}}
@@ -129,7 +162,7 @@ mutable struct LBFGS
     LBFGS() = new()
 end
 
-function init!(M::LBFGS, m)::LBFGS
+    function init!(M::LBFGS, m)::LBFGS
     M.m = m
     M.δs = [] 
     M.γs = [] 
@@ -137,7 +170,7 @@ function init!(M::LBFGS, m)::LBFGS
     return M
 end
 
-function step!(M::LBFGS, f, ∇f, θ::Vector{Float64})::Vector{Float64}
+    function step!(M::LBFGS, f, ∇f, θ::Vector{Float64})::Vector{Float64}
     δs, γs, qs = M.δs, M.γs, M.qs 
     m::Int64, g::Vector{Float64} = length(δs), ∇f(θ)
     d::Vector{Float64} = -g # kierunek
@@ -178,7 +211,7 @@ function step!(M::LBFGS, f, ∇f, θ::Vector{Float64})::Vector{Float64}
     return θ′ 
 end
 
-function zoom(φ, φ′, αlo::Float64, αhi::Float64, c1=1e-4, c2=0.1, jmax=1000)
+    function zoom(φ, φ′, αlo::Float64, αhi::Float64, c1=1e-4, c2=0.1, jmax=1000)
     φ′0 = φ′(0.0) 
     for j = 1:jmax
         αj::Float64 = 0.5(αlo + αhi) # bisection 
@@ -199,7 +232,7 @@ function zoom(φ, φ′, αlo::Float64, αhi::Float64, c1=1e-4, c2=0.1, jmax=100
     return 0.5(αlo + αhi) 
 end
 
-function line_search(φ, φ′, d, c1=1e-4, c2=0.1, ρ=0.1, αmax=100., jmax=1000)
+    function line_search(φ, φ′, d, c1=1e-4, c2=0.1, ρ=0.1, αmax=100., jmax=1000)
     αi, αj = 0.0, 1.0
     φαi, φ0, φ′0 = φ(αi), φ(0.0), φ′(0.0) 
     for j = 1:jmax
