@@ -16,10 +16,10 @@ const test_set = Set([
 const benchmark_varialbe = "TEST_PERFORMANCE"
 const my_seed = 1620689075631
 Random.seed!(my_seed)
-const f = f_rosenbrock
-const ∇f = ∇f_rosenbrock 
-const f_name = "rosenbrock"
-const n = 2
+const f = f_ackley # f_rosenbrock
+const ∇f = ∇f_ackley # ∇f_rosenbrock 
+const f_name = "ackley"
+const n = 4
 const iters = 100
 const err = 0.0001
 const l_rate = 0.00001
