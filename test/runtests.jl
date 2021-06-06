@@ -8,25 +8,26 @@ include("./utils.jl")
 using .Utils
 
 const test_set = Set([
-    # "moment",
-    # "gd",
+    "moment",
+    "gd",
     "bfgs",
     "lbfgs"
 ])
 const benchmark_varialbe = "TEST_PERFORMANCE"
-const my_seed = 1620689075631
+const my_seed = 1620689075631 # Ziarno do generatora licz losowych
 Random.seed!(my_seed)
-const f = f_rosenbrock
-const ∇f = ∇f_rosenbrock 
-const f_name = "rosenbrock"
-const n = 2
-const iters = 100
-const err = 0.0001
-const l_rate = 0.00001
-const x = zeros(n)
-const logger = SimpleLogger(stdout, Logging.Debug)
+const f = f_rosenbrock # funkcjia minimalizowana
+const ∇f = ∇f_rosenbrock # funkcjia zwracająca gradient funkcji minimalizowanej
+const f_name = "rosenbrock" # nazwa  funkcji
+const n = 2 # liczba zmiennych
+const iters = 100 # max iteracji
+const err = 0.0001 # dopuszczalny błęd
+const l_rate = 0.00001 # prędkość uczenia dla Gradientu i Momentum
+const logger = SimpleLogger(stdout, Logging.Debug) # domyślny loger podczas debagowania
 
-rand!(x)
+const x = zeros(n) 
+rand!(x) # inicializowanie losowego punktu startowego
+
 @info "Chosen point: $x"
 
 if "optim_bfgs" in test_set
