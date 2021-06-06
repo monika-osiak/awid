@@ -8,8 +8,8 @@ include("./utils.jl")
 using .Utils
 
 const test_set = Set([
-    "moment",
-    "gd",
+    # "moment",
+    # "gd",
     "bfgs",
     "lbfgs"
 ])

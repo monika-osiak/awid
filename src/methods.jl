@@ -141,15 +141,15 @@ end
     # @debug "g: $g"
     α = strong_backtracking(f, ∇f, x, -Q * g)
     # @debug "α: $α"
-    x′::Vector{Float64} = x + α * (-Q * g)
+    x′::Vector{Float64} = x .+ α .* (-Q * g)
     # @debug "x': $x′"
     g′::Vector{Float64} = ∇f(x′)
     # @debug "g: $g′"
-    δ::Vector{Float64} = x′ - x
+    δ::Vector{Float64} = x′ .- x
     # @debug "δ: $δ"
-    γ::Vector{Float64} = g′ - g
+    γ::Vector{Float64} = g′ .- g
     # @debug "γ: $γ"
-    Q[:] = Q - (δ * γ' * Q + Q * γ * δ') / (δ' * γ) + (1 + (γ' * Q * γ) / (δ' * γ))[1] * (δ * δ') / (δ' * γ)
+    Q .= Q .- (δ * γ' * Q + Q * γ * δ') / (δ' * γ) .+ (1 + (γ' * Q * γ) / (δ' * γ))[1] * (δ * δ') / (δ' * γ)
     # @debug "new Q: $Q"
     return x′
 end
@@ -183,7 +183,7 @@ end
         q::Vector{Float64} = g
         for i in m:-1:1
             qs[i] = copy(q)
-            q -= (δs[i] ⋅ q) / (γs[i] ⋅ δs[i]) * γs[i]
+            q -= (δs[i] ⋅ q) / (γs[i] ⋅ δs[i]) .* γs[i]
         end
         z::Vector{Float64} = (γs[m] .* δs[m] .* q) / (γs[m] ⋅ γs[m]) 
         for i in 1:+1:m
@@ -191,16 +191,16 @@ end
         end
         d = -z; # rekonstrukcja kierunku
     end
-    φ = @closure α -> f(θ + α * d)
-    φ′ = @closure α -> ∇f(θ + α * d) ⋅ d 
+    φ = @closure α -> f(θ .+ α .* d)
+    φ′ = @closure α -> ∇f(θ .+ α .* d) ⋅ d 
     α = line_search(φ, φ′, d)
     @debug "Point: $θ"
     @debug "line_search: $α"
-    θ′::Vector{Float64} = θ + α * d
+    θ′::Vector{Float64} = θ .+ α .* d
     @debug "New Point: $θ′"
     g′::Vector{Float64} = ∇f(θ′) # nowy wektor
-    δ::Vector{Float64} = θ′ - θ
-    γ::Vector{Float64} = g′ - g
+    δ::Vector{Float64} = θ′ .- θ
+    γ::Vector{Float64} = g′ .- g
     push!(δs, δ);
     push!(γs, γ);
     push!(qs, zero(θ)) 
