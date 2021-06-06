@@ -211,7 +211,7 @@ end
     return θ′ 
 end
 
-    function zoom(φ, φ′, αlo::Float64, αhi::Float64, c1=1e-4, c2=0.1, jmax=1000)
+    function zoom(φ, φ′, αlo::Float64, αhi::Float64, c1=1e-4, c2=0.1, jmax=1000)::Float64
     φ′0 = φ′(0.0) 
     for j = 1:jmax
         αj::Float64 = 0.5(αlo + αhi) # bisection 
@@ -232,7 +232,7 @@ end
     return 0.5(αlo + αhi) 
 end
 
-    function line_search(φ, φ′, d, c1=1e-4, c2=0.1, ρ=0.1, αmax=100., jmax=1000)
+    function line_search(φ, φ′, d, c1=1e-4, c2=0.1, ρ=0.1, αmax=100., jmax=1000)::Float64
     αi, αj = 0.0, 1.0
     φαi, φ0, φ′0 = φ(αi), φ(0.0), φ′(0.0) 
     for j = 1:jmax

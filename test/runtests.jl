@@ -100,5 +100,5 @@ if haskey(ENV, benchmark_varialbe)
     add_metadata("xs", x)
 
     include("./bench_methods.jl")
-    # include("./bench_functions.jl")
+    include("./bench_functions.jl")
 end

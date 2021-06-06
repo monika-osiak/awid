@@ -23,7 +23,7 @@ function add_test(id::String, b::BenchmarkTools.Trial)
     dic[id]["memory"]  = BenchmarkTools.memory(b)
 end
 
-function add_metadata(id::String, meta::Any)::nothing
+function add_metadata(id::String, meta)
     dic[id] = meta
 end
   

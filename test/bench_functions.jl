@@ -4,12 +4,6 @@ using BenchmarkTools
 using Random
 using Test
 
-n = 4
-x = zeros(n)
-my_seed = 1620689075631
-Random.seed!(my_seed)
-rand!(x)
-
 pp(b) = show(stdout, MIME"text/plain"(), b)
 
 info = @benchmark f_rosenbrock(x)
