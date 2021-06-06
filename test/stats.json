@@ -3,12 +3,12 @@
   "err_tolerance": 0.0001,
   "max_iters": 100,
   "GradientDescent": {
-    "minimum": 2.0558e6,
-    "median": 2.5493e6,
+    "minimum": 2.0696e6,
+    "median": 2.3937e6,
     "allocs": 16111,
     "memory": 649824,
-    "mean": 3.3408959087860496e6,
-    "maximum": 3.85977e7
+    "mean": 2.7242424904423812e6,
+    "maximum": 1.64837e7
   },
   "dims": 4,
   "xs": [
@@ -18,12 +18,12 @@
     0.05789517222906437
   ],
   "Momentum": {
-    "minimum": 2.3319e6,
-    "median": 2.56155e6,
+    "minimum": 2.3426e6,
+    "median": 2.85425e6,
     "allocs": 16811,
     "memory": 713824,
-    "mean": 2.906854662004662e6,
-    "maximum": 1.32322e7
+    "mean": 3.352855114401077e6,
+    "maximum": 1.8625e7
   },
   "lrate": 1.0e-5
 }

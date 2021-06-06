@@ -8,18 +8,18 @@ include("./utils.jl")
 using .Utils
 
 const test_set = Set([
-    "moment",
-    "gd",
+    # "moment",
+    # "gd",
     "bfgs",
-    "lbfgs"
+    # "lbfgs"
 ])
 const benchmark_varialbe = "TEST_PERFORMANCE"
 const my_seed = 1620689075631
 Random.seed!(my_seed)
-const f = f_ackley # f_rosenbrock
-const ∇f = ∇f_ackley # ∇f_rosenbrock 
-const f_name = "ackley"
-const n = 4
+const f = f_rosenbrock
+const ∇f = ∇f_rosenbrock 
+const f_name = "rosenbrock"
+const n = 2
 const iters = 100
 const err = 0.0001
 const l_rate = 0.00001
@@ -51,7 +51,7 @@ if "gd" in test_set
     # with_logger(logger) do
     mom = zeros(length(x))
     gd = Methods.GradientDescent(l_rate)
-    pts, errs, i = optimalize(f, ∇f, x, gd, eps(), iters)
+    pts, errs, i = optimalize(f, ∇f, x, gd, err, iters)
     @test f_name != "rosenbrock" ||  pts[end] ==  [0.3115209459667753, 0.6993648285144705]
     @info "GradientDescent"
     @info pts[end]
@@ -64,6 +64,7 @@ if "bfgs" in test_set
     bfgs = Methods.BFGS(length(x))
     # with_logger(logger) do
     pts, errs, i = optimalize(f, ∇f, x, bfgs, eps(), iters)
+    bfgs = Methods.BFGS(length(x))
     @test f_name != "rosenbrock" || pts[end] == [1.0000000002538125, 1.0000000005044984]
     @info "BFGS"
     @info pts[end]
@@ -100,5 +101,5 @@ if haskey(ENV, benchmark_varialbe)
     add_metadata("xs", x)
 
     include("./bench_methods.jl")
-    include("./bench_functions.jl")
+    # include("./bench_functions.jl")
 end
