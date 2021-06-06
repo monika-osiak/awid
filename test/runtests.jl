@@ -4,6 +4,7 @@ using OptimizationMethods.Methods
 using Logging
 using Random
 using Test
+using .Utils
 
 const benchmark_varialbe = "TEST_PERFORMANCE"
 include("./utils.jl")
@@ -19,6 +20,7 @@ const my_seed = 1620689075631
 Random.seed!(my_seed)
 const f = f_rosenbrock
 const ∇f = ∇f_rosenbrock 
+const f_name = "rosenbrock"
 const n = 2
 const iters = 100
 const err = 0.0001
@@ -40,7 +42,7 @@ if "moment" in test_set
     mom = zeros(length(x))
     momentum = Methods.Momentum(l_rate, 0.01, mom)
     pts, errs, i = optimalize(f, ∇f, x, momentum, eps(), iters)
-    @test pts[end] == [0.3122846156075936, 0.6981553088628102]
+    @test f_name != "rosenbrock" || pts[end] == [0.3122846156075936, 0.6981553088628102]
     @info "Momentum"
     @info pts[end]
     @info errs[end], i
@@ -53,9 +55,8 @@ if "gd" in test_set
     mom = zeros(length(x))
     gd = Methods.GradientDescent(l_rate)
     pts, errs, i = optimalize(f, ∇f, x, gd, eps(), iters)
-    @test pts[end] ==  [0.3115209459667753, 0.6993648285144705]
+    @test f_name != "rosenbrock" ||  pts[end] ==  [0.3115209459667753, 0.6993648285144705]
     @info "GradientDescent"
-    @test pts[end] == []
     @info pts[end]
     @info errs[end], i
     # end
@@ -65,7 +66,7 @@ end
 if "bfgs" in test_set
     bfgs = Methods.BFGS(length(x))
     pts, errs, i = optimalize(f, ∇f, x, bfgs, eps(), iters)
-    @test pts[end] == [1.0000000002538125, 1.0000000005044984]
+    @test f_name != "rosenbrock" || pts[end] == [1.0000000002538125, 1.0000000005044984]
     @info "BFGS"
     @info pts[end]
     @info errs[end], i
@@ -82,7 +83,7 @@ if "lbfgs" in test_set
         lbfgs = Methods.LBFGS()
         init!(lbfgs, i)
         local pts, errs, iter = optimalize(f, ∇f, x, lbfgs, eps(), iters)
-        @test pts[end] == lbfgs_res[i]
+        @test f_name != "rosenbrock" || pts[end] == lbfgs_res[i]
         @info "L-BFGS history: $i"
         @info "iterations $iter"
         @info pts[end]
@@ -90,6 +91,8 @@ if "lbfgs" in test_set
     end
 end
 if haskey(ENV, benchmark_varialbe)
+    add_metadata("function", f_name)
+
     include("./bench_methods.jl")
     # include("./bench_functions.jl")
 end

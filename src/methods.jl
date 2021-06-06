@@ -67,12 +67,13 @@ end
 
 BFGS(n::Int64) = BFGS(Matrix(1.0I, n, n))
 
-function strong_backtracking(f, ∇, x::Vector{Float64}, d; α=1.0, β=1e-4, σ=0.1)
-    y0, g0, y_prev, α_prev  = f(x), ∇(x) ⋅ d, NaN, 0.0
-    αlo, αhi = NaN, NaN
+function strong_backtracking(f, ∇, x::Vector{Float64}, d; α=1.0, β=1e-4, σ=0.1)::Float64
+    y0::Float64, g0 = f(x), ∇(x) ⋅ d
+    y_prev::Float64, α_prev::Float64  = NaN, 0.0
+    αlo::Float64, αhi::Float64 = NaN, NaN
   # bracket phase
     while true
-        y = f(x + α * d)
+        y::Float64 = f(x + α * d)
         if y > y0 + β * α * g0 || (!isnan(y_prev) && y ≥ y_prev)
             αlo, αhi = α_prev, α
             break
@@ -87,7 +88,7 @@ function strong_backtracking(f, ∇, x::Vector{Float64}, d; α=1.0, β=1e-4, σ=
         y_prev, α_prev, α  = y, α, 2α
     end
   # zoom phase
-    ylo = f(x + αlo * d)
+    ylo::Float64 = f(x + αlo * d)
     while true
         α = (αlo + αhi) / 2
         y = f(x + α * d)
@@ -110,12 +111,12 @@ function step!(M::BFGS, f, ∇f, x::Vector{Float64})::Vector{Float64}
         return x
     end
 
-    Q, g = M.Q, ∇f(x)
+    Q::Matrix{Float64}, g::Vector{Float64} = M.Q, ∇f(x)
     α = strong_backtracking(f, ∇f, x, -Q * g)
-    x′ = x + α * (-Q * g)
+    x′::Vector{Float64} = x + α * (-Q * g)
     g′::Vector{Float64} = ∇f(x′)
-    δ = x′ - x
-    γ = g′ - g
+    δ::Vector{Float64} = x′ - x
+    γ::Vector{Float64} = g′ - g
     Q[:] = Q - (δ * γ' * Q + Q * γ * δ') / (δ' * γ) + (1 + (γ' * Q * γ) / (δ' * γ))[1] * (δ * δ') / (δ' * γ)
     return x′
 end
@@ -128,7 +129,7 @@ mutable struct LBFGS
     LBFGS() = new()
 end
 
-    function init!(M::LBFGS, m) 
+function init!(M::LBFGS, m)::LBFGS
     M.m = m
     M.δs = [] 
     M.γs = [] 
@@ -136,7 +137,7 @@ end
     return M
 end
 
-    function step!(M::LBFGS, f, ∇f, θ::Vector{Float64})::Vector{Float64}
+function step!(M::LBFGS, f, ∇f, θ::Vector{Float64})::Vector{Float64}
     δs, γs, qs = M.δs, M.γs, M.qs 
     m::Int64, g::Vector{Float64} = length(δs), ∇f(θ)
     d::Vector{Float64} = -g # kierunek
@@ -146,12 +147,12 @@ end
         # posibli move in random direction
         # return θ || (!isnan(y_prev) && y ≥ y_prev)
     if m > 0 
-        q = g
+        q::Vector{Float64} = g
         for i in m:-1:1
             qs[i] = copy(q)
             q -= (δs[i] ⋅ q) / (γs[i] ⋅ δs[i]) * γs[i]
         end
-        z = (γs[m] .* δs[m] .* q) / (γs[m] ⋅ γs[m]) 
+        z::Vector{Float64} = (γs[m] .* δs[m] .* q) / (γs[m] ⋅ γs[m]) 
         for i in 1:+1:m
             z += δs[i] * (δs[i] ⋅ qs[i] - γs[i] ⋅ z) / (γs[i] ⋅ δs[i]) 
         end
@@ -162,11 +163,11 @@ end
     α = line_search(φ, φ′, d)
     @debug "Point: $θ"
     @debug "line_search: $α"
-    θ′ = θ + α * d
+    θ′::Vector{Float64} = θ + α * d
     @debug "New Point: $θ′"
     g′::Vector{Float64} = ∇f(θ′) # nowy wektor
-    δ = θ′ - θ
-    γ = g′ - g
+    δ::Vector{Float64} = θ′ - θ
+    γ::Vector{Float64} = g′ - g
     push!(δs, δ);
     push!(γs, γ);
     push!(qs, zero(θ)) 
@@ -177,11 +178,11 @@ end
     return θ′ 
 end
 
-    function zoom(φ, φ′, αlo, αhi, c1=1e-4, c2=0.1, jmax=1000)
+function zoom(φ, φ′, αlo::Float64, αhi::Float64, c1=1e-4, c2=0.1, jmax=1000)
     φ′0 = φ′(0.0) 
     for j = 1:jmax
-        αj = 0.5(αlo + αhi) # bisection 
-        φαj = φ(αj)
+        αj::Float64 = 0.5(αlo + αhi) # bisection 
+        φαj::Float64 = φ(αj)
         if φαj > φ(0.0) + c1 * αj * φ′0 || φαj ≥ φ(αlo)
             αhi = αj 
         else
@@ -198,7 +199,7 @@ end
     return 0.5(αlo + αhi) 
 end
 
-    function line_search(φ, φ′, d, c1=1e-4, c2=0.1, ρ=0.1, αmax=100., jmax=1000)
+function line_search(φ, φ′, d, c1=1e-4, c2=0.1, ρ=0.1, αmax=100., jmax=1000)
     αi, αj = 0.0, 1.0
     φαi, φ0, φ′0 = φ(αi), φ(0.0), φ′(0.0) 
     for j = 1:jmax

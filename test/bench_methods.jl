@@ -3,8 +3,6 @@ using OptimizationMethods.Methods
 using BenchmarkTools
 using .Utils
 
-add_metadata("function", "rosenbrock")
-
 mom = zeros(length(x))
 momentum = Methods.Momentum(l_rate, 0.01, mom)
 

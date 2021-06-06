@@ -15,12 +15,12 @@ end
 
 function add_test(id::String, b::BenchmarkTools.Trial)
     dic[id] = Dict()
-    dic[id]["minimum"] = time(minimum(b))
-    dic[id]["median"]  = time(median(b))
-    dic[id]["mean"]    = time(mean(b))
-    dic[id]["maximum"] = time(maximum(b))
-    dic[id]["allocs"]  = allocs(b)
-    dic[id]["memory"]  = memory(b)
+    dic[id]["minimum"] = BenchmarkTools.time(BenchmarkTools.minimum(b))
+    dic[id]["median"]  = BenchmarkTools.time(BenchmarkTools.median(b))
+    dic[id]["mean"]    = BenchmarkTools.time(BenchmarkTools.mean(b))
+    dic[id]["maximum"] = BenchmarkTools.time(BenchmarkTools.maximum(b))
+    dic[id]["allocs"]  = BenchmarkTools.allocs(b)
+    dic[id]["memory"]  = BenchmarkTools.memory(b)
 end
 
 function add_metadata(id::String, meta::String)
