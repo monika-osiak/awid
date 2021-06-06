@@ -1,29 +1,59 @@
 {
-  "function": "ackley",
-  "err_tolerance": 0.0001,
   "max_iters": 100,
-  "GradientDescent": {
-    "minimum": 2.0696e6,
-    "median": 2.3937e6,
-    "allocs": 16111,
-    "memory": 649824,
-    "mean": 2.7242424904423812e6,
-    "maximum": 1.64837e7
-  },
-  "dims": 4,
   "xs": [
     0.2350924037689941,
-    0.8376183254092429,
-    0.7205579513332212,
-    0.05789517222906437
+    0.8376183254092429
   ],
-  "Momentum": {
-    "minimum": 2.3426e6,
-    "median": 2.85425e6,
-    "allocs": 16811,
-    "memory": 713824,
-    "mean": 3.352855114401077e6,
-    "maximum": 1.8625e7
+  "lrate": 1.0e-5,
+  "L-BFGS-2": {
+    "minimum": 530900.0,
+    "median": 643200.0,
+    "allocs": 12091,
+    "memory": 966736,
+    "mean": 878300.0,
+    "maximum": 5.6969e6
   },
-  "lrate": 1.0e-5
+  "L-BFGS-1": {
+    "minimum": 540400.0,
+    "median": 756250.0,
+    "allocs": 12078,
+    "memory": 966048,
+    "mean": 898212.0,
+    "maximum": 5.7473e6
+  },
+  "err_tolerance": 0.0001,
+  "Momentum": {
+    "minimum": 645400.0,
+    "median": 679300.0,
+    "allocs": 2609,
+    "memory": 192000,
+    "mean": 694436.0,
+    "maximum": 869400.0
+  },
+  "BFGS": {
+    "minimum": 310800.0,
+    "median": 515400.0,
+    "allocs": 1669,
+    "memory": 123792,
+    "mean": 527725.0,
+    "maximum": 1.0803e6
+  },
+  "function": "rosenbrock",
+  "GradientDescent": {
+    "minimum": 323500.0,
+    "median": 326100.0,
+    "allocs": 1709,
+    "memory": 124800,
+    "mean": 330262.0,
+    "maximum": 408800.0
+  },
+  "L-BFGS-3": {
+    "minimum": 533200.0,
+    "median": 628150.0,
+    "allocs": 12104,
+    "memory": 967424,
+    "mean": 890339.0,
+    "maximum": 5.8268e6
+  },
+  "dims": 2
 }

@@ -8,10 +8,10 @@ include("./utils.jl")
 using .Utils
 
 const test_set = Set([
-    # "moment",
-    # "gd",
+    "moment",
+    "gd",
     "bfgs",
-    # "lbfgs"
+    "lbfgs"
 ])
 const benchmark_varialbe = "TEST_PERFORMANCE"
 const my_seed = 1620689075631
