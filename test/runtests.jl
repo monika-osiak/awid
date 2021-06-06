@@ -18,10 +18,10 @@ const test_set = Set([
 
 const my_seed = 1620689075631
 Random.seed!(my_seed)
-const f = f_rosenbrock
-const ∇f = ∇f_rosenbrock 
-const f_name = "rosenbrock"
-const n = 2
+const f = f_ackley # f_rosenbrock
+const ∇f = ∇f_ackley# ∇f_rosenbrock 
+const f_name = "ackley"
+const n = 3
 const iters = 100
 const err = 0.0001
 const l_rate = 0.00001
@@ -92,6 +92,11 @@ if "lbfgs" in test_set
 end
 if haskey(ENV, benchmark_varialbe)
     add_metadata("function", f_name)
+    add_metadata("dims",n)
+    add_metadata("max_iters",iters)
+    add_metadata("err_tolerance",err)
+    add_metadata("lrate",l_rate)
+    add_metadata("xs",x)
 
     include("./bench_methods.jl")
     # include("./bench_functions.jl")
