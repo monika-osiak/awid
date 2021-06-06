@@ -2,58 +2,52 @@
   "max_iters": 100,
   "xs": [
     0.2350924037689941,
-    0.8376183254092429
+    0.8376183254092429,
+    0.7205579513332212,
+    0.05789517222906437
   ],
   "lrate": 1.0e-5,
   "L-BFGS-2": {
-    "minimum": 869900.0,
-    "median": 920600.0,
-    "allocs": 23096,
-    "memory": 1142816,
-    "mean": 1.242472e6,
-    "maximum": 6.8796e6
+    "minimum": 1.89688e7,
+    "median": 2.339745e7,
+    "allocs": 167530,
+    "memory": 6439120,
+    "mean": 2.6067351e7,
+    "maximum": 8.21711e7
   },
   "L-BFGS-1": {
-    "minimum": 868900.0,
-    "median": 899300.0,
-    "allocs": 23083,
-    "memory": 1142128,
-    "mean": 1.208211e6,
-    "maximum": 6.4369e6
+    "minimum": 2.55842e7,
+    "median": 5.70701e7,
+    "allocs": 167517,
+    "memory": 6438336,
+    "mean": 6.4879416666666664e7,
+    "maximum": 2.617163e8
   },
   "err_tolerance": 0.0001,
   "Momentum": {
-    "minimum": 644600.0,
-    "median": 652600.0,
-    "allocs": 2609,
-    "memory": 192000,
-    "mean": 667985.0,
-    "maximum": 778500.0
+    "minimum": 2.4999e6,
+    "median": 3.94045e6,
+    "allocs": 17011,
+    "memory": 720224,
+    "mean": 7.877465e6,
+    "maximum": 6.73777e7
   },
-  "BFGS": {
-    "minimum": 476400.0,
-    "median": 604900.0,
-    "allocs": 2025,
-    "memory": 150240,
-    "mean": 616256.0,
-    "maximum": 1.3562e6
-  },
-  "function": "rosenbrock",
+  "function": "ackley",
   "GradientDescent": {
-    "minimum": 331800.0,
-    "median": 334650.0,
-    "allocs": 1709,
-    "memory": 124800,
-    "mean": 345766.0,
-    "maximum": 575600.0
+    "minimum": 2.1002e6,
+    "median": 2.6128e6,
+    "allocs": 16111,
+    "memory": 649824,
+    "mean": 3.037236e6,
+    "maximum": 1.04205e7
   },
   "L-BFGS-3": {
-    "minimum": 861300.0,
-    "median": 922350.0,
-    "allocs": 23109,
-    "memory": 1143504,
-    "mean": 1.250521e6,
-    "maximum": 6.6089e6
+    "minimum": 1.8043e7,
+    "median": 2.214465e7,
+    "allocs": 167543,
+    "memory": 6439904,
+    "mean": 2.2240952e7,
+    "maximum": 3.14701e7
   },
-  "dims": 2
+  "dims": 4
 }

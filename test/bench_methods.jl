@@ -18,11 +18,13 @@ info = @benchmark pts, errs, i = optimalize(f, ∇f, x, gd, err, iters)
 add_test("GradientDescent",info)
 @info "GradientDescent: done"
 
-bfgs = Methods.BFGS(length(x))
-@info "BFGS: $bfgs"
-info = @benchmark pts, errs, i = optimalize(f, ∇f, x, bfgs, err, iters)
-add_test("BFGS",info)
-@info "BFGS: done"
+save_test()
+# bfgs = Methods.BFGS(length(x))
+# @info "BFGS: $bfgs"
+# info = @benchmark pts, errs, i = optimalize(f, ∇f, x, bfgs, err, iters)
+# add_test("BFGS",info)
+# @info "BFGS: done"
+save_test()
 
 lbfgs = Methods.LBFGS()
 for i = 1:3
