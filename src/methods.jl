@@ -191,8 +191,8 @@ end
         end
         d = -z; # rekonstrukcja kierunku
     end
-    φ = @closure α -> f(θ + α * d)
-    φ′ = @closure α -> ∇f(θ + α * d) ⋅ d 
+    φ = α -> f(θ + α * d)
+    φ′ = α -> ∇f(θ + α * d) ⋅ d 
     α = line_search(φ, φ′, d)
     @debug "Point: $θ"
     @debug "line_search: $α"
