@@ -8,12 +8,12 @@
     0.8376183254092429
   ],
   "Momentum": {
-    "minimum": 327400.0,
-    "median": 369000.0,
-    "allocs": 2309,
-    "memory": 171200,
-    "mean": 444818.84,
-    "maximum": 1.04855e7
+    "minimum": 299900.0,
+    "median": 311100.0,
+    "allocs": 1509,
+    "memory": 113600,
+    "mean": 345741.08,
+    "maximum": 8.7154e6
   },
   "lrate": 1.0e-5
 }
