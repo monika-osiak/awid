@@ -9,9 +9,9 @@ using .Utils
 
 const test_set = Set([
     "moment",
-    "gd",
-    "bfgs",
-    "lbfgs"
+    # "gd",
+    # "bfgs",
+    # "lbfgs"
 ])
 const benchmark_varialbe = "TEST_PERFORMANCE"
 const my_seed = 1620689075631 # Ziarno do generatora licz losowych

@@ -54,10 +54,8 @@ Momentum(α, β, n::Int64) = Momentum(α, β, zeros(n))
 
 function step!(M::Momentum, f, ∇f, x::Vector{Float64})::Vector{Float64}
     α, β, v, g = M.α, M.β, M.v, ∇f(x)
-    @debug "Gradient: $g"
-    @debug M
-    @debug "Parameters: ($α, $β, $v, $g)"
     v .= β .* v .- α .* g
+    # M.v .= M.β .* M.v .- M.α .* ∇f(x)
     return x .+ v
 end
 
