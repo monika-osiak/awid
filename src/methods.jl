@@ -6,7 +6,9 @@ using StaticArrays
 
 export Momentum, BFGS, LBFGS, step!, init!, DescentMethod, optimalize, GradientDescent
 
-function optimalize(f, ∇f, x₀::T, opt, e::Float64, i::Int64) where T <: AbstractArray{Q} where Q <: Float64
+abstract type DescentMethod end
+
+function optimalize(f, ∇f, x₀::T, opt::DescentMethod, e::Float64, i::Int64)::Tuple{Vector{AbstractArray{Q}},AbstractArray{Q},Int64} where T <: AbstractArray{Q} where Q <: Float64
     pts::Vector{T} = [x₀] # kolejne wektory x
     err::Vector{Q} = Vector{Q}(undef, i) # kolejne wartości f. straty
     # minimalizacja realokacji
@@ -18,7 +20,7 @@ function optimalize(f, ∇f, x₀::T, opt, e::Float64, i::Int64) where T <: Abst
         if prev < e || isnan(prev)  || p > i 
             break
         end
-        if length(pts) > 1 && pts[end] == pts[end - 1]
+        if p > 1 && pts[end] == pts[end - 1]
             break # when we stop to progress
         end
         err[p] = prev
@@ -30,8 +32,6 @@ function optimalize(f, ∇f, x₀::T, opt, e::Float64, i::Int64) where T <: Abst
     
     pts, err, p
 end
-
-abstract type DescentMethod end
 
 struct GradientDescent <: DescentMethod 
     α::Float64 # learning rate
@@ -52,7 +52,7 @@ Momentum(α, β, n::Int64) = Momentum(α, β, zeros(n))
 # Momentum(α, β, n::Vector{Float64}) = Momentum(α, β, n)
 
 
-function step!(M::Momentum{T,Q}, f, ∇f, x::T)::T  where T <: AbstractArray{Q} where Q <: Float64
+function step!(M::Momentum{T,Q}, f, ∇f, x::AbstractArray{Q})::AbstractArray{Q}  where T <: AbstractArray{Q} where Q <: Float64
     M.v .= M.β .* M.v .- M.α .* ∇f(x)
     return x .+ M.v
 end
@@ -150,7 +150,7 @@ end
     return x′
 end
 
-    mutable struct LBFGS
+    mutable struct LBFGS <: DescentMethod
     m::Int64
     δs::Vector{Vector{Float64}}
     γs::Vector{Vector{Float64}}

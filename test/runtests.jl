@@ -28,8 +28,9 @@ const err = 0.0001 # dopuszczalny błęd
 const l_rate = 0.00001 # prędkość uczenia dla Gradientu i Momentum
 const logger = SimpleLogger(stdout, Logging.Debug) # domyślny loger podczas debagowania
 
-const x = @MVector zeros(n) 
-rand!(x) # inicializowanie losowego punktu startowego
+const x_t = @MVector zeros(n) 
+rand!(x_t) # inicializowanie losowego punktu startowego
+const x = SVector(x_t)
 
 @info "Chosen point: $x"
 
@@ -49,6 +50,9 @@ if "moment" in test_set
     @info pts[end]
     @info errs[end], i
     # end
+    mom = @MVector zeros(n)
+    momentum = Methods.Momentum(l_rate, 0.01, mom)
+    optimalize(f, ∇f, x, momentum, eps(), iters)
 end
 
 if "gd" in test_set
