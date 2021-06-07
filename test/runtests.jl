@@ -4,6 +4,7 @@ using OptimizationMethods.Methods
 using Logging
 using Random
 using Test
+using StaticArrays
 include("./utils.jl")
 using .Utils
 
@@ -21,12 +22,13 @@ const ∇f = ∇f_rosenbrock # funkcjia zwracająca gradient funkcji minimalizow
                        #  wszystkie są zdefiniwane w .\src\functions.jl 
 const f_name = "rosenbrock" # nazwa  funkcji
 const n = 2 # liczba zmiennych
+
 const iters = 100 # max iteracji
 const err = 0.0001 # dopuszczalny błęd
 const l_rate = 0.00001 # prędkość uczenia dla Gradientu i Momentum
 const logger = SimpleLogger(stdout, Logging.Debug) # domyślny loger podczas debagowania
 
-const x = zeros(n) 
+const x = @MVector zeros(n) 
 rand!(x) # inicializowanie losowego punktu startowego
 
 @info "Chosen point: $x"
@@ -39,7 +41,7 @@ end
 
 if "moment" in test_set
     # with_logger(logger) do
-    mom = zeros(length(x))
+    mom = @MVector zeros(n)
     momentum = Methods.Momentum(l_rate, 0.01, mom)
     pts, errs, i = optimalize(f, ∇f, x, momentum, eps(), iters)
     @test f_name != "rosenbrock" || pts[end] == [0.3122846156075936, 0.6981553088628102]

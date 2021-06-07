@@ -2,12 +2,13 @@ module Methods
 using FastClosures
 using LinearAlgebra
 using ExportAll
+using StaticArrays
 
 export Momentum, BFGS, LBFGS, step!, init!, DescentMethod, optimalize, GradientDescent
 
-function optimalize(f, ∇f, x₀::Vector{Float64}, opt, e::Float64, i::Int64)::Tuple{Vector{Vector{Float64}},Vector{Float64},Int64}
-    pts::Vector{Vector{Float64}} = [x₀] # kolejne wektory x
-    err::Vector{Float64} = Vector{Float64}(undef, i) # kolejne wartości f. straty
+function optimalize(f, ∇f, x₀::T, opt, e::Float64, i::Int64) where T <: AbstractArray{Q} where Q <: Float64
+    pts::Vector{T} = [x₀] # kolejne wektory x
+    err::Vector{Q} = Vector{Q}(undef, i) # kolejne wartości f. straty
     # minimalizacja realokacji
     p = 0
     while true
@@ -37,14 +38,13 @@ struct GradientDescent <: DescentMethod
 end
 
 function step!(M::GradientDescent, f, ∇f, θ::Vector{Float64})::Vector{Float64}
-    # α::Float64, g::Vector{Float64} = M.α, ∇f(θ)
     return θ .- M.α .* ∇f(θ)
 end
 
-mutable struct Momentum <: DescentMethod
-    α::Float64 # learning rate
-    β::Float64 # momentum decay
-    v::Vector{Float64}# momentum
+mutable struct Momentum{T,Q} <: DescentMethod where Q <: Float64 where T <: AbstractArray{Q}
+    α::Q # learning rate
+    β::Q # momentum decay
+    v::T # momentum
 end
 
 
@@ -52,11 +52,9 @@ Momentum(α, β, n::Int64) = Momentum(α, β, zeros(n))
 # Momentum(α, β, n::Vector{Float64}) = Momentum(α, β, n)
 
 
-function step!(M::Momentum, f, ∇f, x::Vector{Float64})::Vector{Float64}
-    α, β, v, g = M.α, M.β, M.v, ∇f(x)
-    v .= β .* v .- α .* g
-    # M.v .= M.β .* M.v .- M.α .* ∇f(x)
-    return x .+ v
+function step!(M::Momentum{T,Q}, f, ∇f, x::T)::T  where T <: AbstractArray{Q} where Q <: Float64
+    M.v .= M.β .* M.v .- M.α .* ∇f(x)
+    return x .+ M.v
 end
 
 mutable struct BFGS <: DescentMethod

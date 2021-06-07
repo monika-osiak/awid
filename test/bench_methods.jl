@@ -3,10 +3,11 @@ using OptimizationMethods.Methods
 using BenchmarkTools
 using Logging
 using .Utils
+using StaticArrays
 
 BenchmarkTools.DEFAULT_PARAMETERS.samples = 10000
 
-mom = zeros(length(x))
+mom = @MVector zeros(n)
 momentum = Methods.Momentum(l_rate, 0.01, mom)
 
 info = @benchmark pts, errs, i = optimalize(f, ∇f, x, momentum, err, iters)
