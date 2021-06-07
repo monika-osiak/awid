@@ -9,25 +9,27 @@ export Momentum, BFGS, LBFGS, step!, init!, DescentMethod, optimalize, GradientD
 abstract type DescentMethod end
 
 function optimalize(f, ∇f, x₀::T, opt::DescentMethod, e::Float64, i::Int64)::Tuple{Vector{AbstractArray{Q}},AbstractArray{Q},Int64} where T <: AbstractArray{Q} where Q <: Float64
-    pts::Vector{T} = [x₀] # kolejne wektory x
+    pts::Vector{T} = Vector{T}(undef, i + 1)
+    pts[1] = x₀
+    [x₀] # kolejne wektory x
     err::Vector{Q} = Vector{Q}(undef, i) # kolejne wartości f. straty
     # minimalizacja realokacji
     p = 0
     while true
         p += 1
-        prev::Float64 = f(pts[end])
+        prev::Float64 = f(pts[p])
         # push!(err, prev) # odłóż wynik funkcji dla najnowszego wektora x (miara błędu)
         if prev < e || isnan(prev)  || p > i 
             break
         end
-        if p > 1 && pts[end] == pts[end - 1]
+        if p > 1 && pts[p] == pts[p - 1]
             break # when we stop to progress
         end
         err[p] = prev
         @debug   "Iteracja p= $(p)"
         @debug   "Wektor x: $(pts[p])"
         @debug   "Error: $(err[p])"
-        push!(pts, step!(opt, f, ∇f, pts[end]))
+        pts[p + 1] = step!(opt, f, ∇f, pts[p])
     end
     
     pts, err, p
