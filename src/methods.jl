@@ -39,7 +39,7 @@ struct GradientDescent <: DescentMethod
     α::Float64 # learning rate
 end
 
-function step!(M::GradientDescent, f, ∇f, θ::Vector{Float64})::Vector{Float64}
+function step!(M::GradientDescent, f, ∇f, θ::T)::T  where T <: AbstractArray{Q} where Q <: Float64
     return θ .- M.α .* ∇f(θ)
 end
 

@@ -10,7 +10,7 @@ using .Utils
 
 const test_set = Set([
     "moment",
-    # "gd",
+    "gd",
     # "bfgs",
     # "lbfgs"
 ])

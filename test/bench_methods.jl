@@ -14,10 +14,10 @@ info = @benchmark pts, errs, i = optimalize(f, ∇f, x, momentum, err, iters)
 add_test("Momentum",info)
 @info "Momentum: done"
 
-# gd = Methods.GradientDescent(l_rate)
-# info = @benchmark pts, errs, i = optimalize(f, ∇f, x, gd, err, iters)
-# add_test("GradientDescent",info)
-# @info "GradientDescent: done"
+gd = Methods.GradientDescent(l_rate)
+info = @benchmark pts, errs, i = optimalize(f, ∇f, x, gd, err, iters)
+add_test("GradientDescent",info)
+@info "GradientDescent: done"
 # 
 # bfgs = Methods.BFGS(length(x))
 # @info "BFGS: $bfgs"
