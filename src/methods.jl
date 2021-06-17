@@ -149,7 +149,9 @@ end
     # @debug "δ: $δ"
     γ::Vector{Float64} = g′ .- g
     # @debug "γ: $γ"
-    Q .= Q .- (δ * γ' * Q + Q * γ * δ') / (δ' * γ) .+ (1 + (γ' * Q * γ) / (δ' * γ))[1] * (δ * δ') / (δ' * γ)
+    tmp = δ' * γ
+    tmp2 = Q * γ
+    Q .= Q .- (δ * γ' * Q + tmp2 * δ') / tmp .+ (1 + (γ' * tmp2) / tmp)[1] * (δ * δ') / tmp
     # @debug "new Q: $Q"
     return x′
 end
