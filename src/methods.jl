@@ -185,11 +185,11 @@ end
         q::Vector{Float64} = g
         for i in m:-1:1
             qs[i] = copy(q)
-            q -= (δs[i] ⋅ q) / (γs[i] ⋅ δs[i]) .* γs[i]
+            @inbounds q -= (δs[i] ⋅ q) / (γs[i] ⋅ δs[i]) .* γs[i]
         end
         z::Vector{Float64} = (γs[m] .* δs[m] .* q) / (γs[m] ⋅ γs[m]) 
         for i in 1:+1:m
-            z += δs[i] * (δs[i] ⋅ qs[i] - γs[i] ⋅ z) / (γs[i] ⋅ δs[i]) 
+            @inbounds z += δs[i] * (δs[i] ⋅ qs[i] - γs[i] ⋅ z) / (γs[i] ⋅ δs[i]) 
         end
         d = -z; # rekonstrukcja kierunku
     end
