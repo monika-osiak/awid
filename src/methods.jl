@@ -62,7 +62,7 @@ function step!(M::Momentum, f, ∇f, x::Vector{Float64})::Vector{Float64}
     return x .+ v
 end
 
-mutable struct BFGS <: DescentMethod
+struct BFGS <: DescentMethod
     Q::Matrix{Float64}
     x′::Vector{Float64}
     g′::Vector{Float64}
