@@ -42,7 +42,7 @@ function step!(M::GradientDescent, f, ∇f, θ::Vector{Float64})::Vector{Float64
     return θ .- M.α .* ∇f(θ)
 end
 
-mutable struct Momentum <: DescentMethod
+struct Momentum <: DescentMethod
     α::Float64 # learning rate
     β::Float64 # momentum decay
     v::Vector{Float64}# momentum
