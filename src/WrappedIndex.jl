@@ -20,7 +20,6 @@ end
 
 function Base.iterate(rS::Iterators.Reverse{WrappedIndex{T}}, produced=0) where T <: Integer
 	this = rS.itr
-	@info this
 	if produced == this.size
         return nothing
     else
