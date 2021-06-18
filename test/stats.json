@@ -6,54 +6,54 @@
   ],
   "lrate": 1.0e-5,
   "L-BFGS-2": {
-    "minimum": 419300.0,
-    "median": 443900.0,
+    "minimum": 417600.0,
+    "median": 473650.0,
     "allocs": 10063,
     "memory": 773872,
-    "mean": 646124.0,
-    "maximum": 5.5365e6
+    "mean": 716980.0,
+    "maximum": 5.9946e6
   },
   "L-BFGS-1": {
-    "minimum": 417600.0,
-    "median": 459300.0,
+    "minimum": 420900.0,
+    "median": 595700.0,
     "allocs": 10057,
     "memory": 773296,
-    "mean": 660140.0,
-    "maximum": 5.491e6
+    "mean": 725833.0,
+    "maximum": 6.0573e6
   },
   "err_tolerance": 0.0001,
   "Momentum": {
-    "minimum": 551100.0,
-    "median": 582600.0,
+    "minimum": 553000.0,
+    "median": 587700.0,
     "allocs": 2109,
     "memory": 156800,
-    "mean": 595861.0,
-    "maximum": 719200.0
+    "mean": 616724.0,
+    "maximum": 1.1146e6
   },
   "BFGS": {
-    "minimum": 349000.0,
-    "median": 499750.0,
-    "allocs": 1594,
-    "memory": 126016,
-    "mean": 502327.0,
-    "maximum": 704200.0
+    "minimum": 160800.0,
+    "median": 220250.0,
+    "allocs": 1308,
+    "memory": 106496,
+    "mean": 240240.0,
+    "maximum": 732800.0
   },
   "function": "rosenbrock",
   "GradientDescent": {
-    "minimum": 300700.0,
-    "median": 303850.0,
+    "minimum": 301500.0,
+    "median": 304000.0,
     "allocs": 1609,
     "memory": 115200,
-    "mean": 330635.0,
-    "maximum": 588000.0
+    "mean": 313982.0,
+    "maximum": 452200.0
   },
   "L-BFGS-3": {
-    "minimum": 418200.0,
-    "median": 585200.0,
+    "minimum": 420900.0,
+    "median": 606500.0,
     "allocs": 10069,
     "memory": 774448,
-    "mean": 678719.0,
-    "maximum": 5.4823e6
+    "mean": 734876.0,
+    "maximum": 6.3481e6
   },
   "dims": 2
 }

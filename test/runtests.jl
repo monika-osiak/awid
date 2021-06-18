@@ -63,14 +63,14 @@ end
 
 # in order to force max iterations
 if "bfgs" in test_set
-    bfgs = Methods.BFGS(length(x))
+    @info "BFGS"
+    bfgs = Methods.BFGS(n)
+    @info bfgs
     # with_logger(logger) do
     pts, errs, i = optimalize(f, ∇f, x, bfgs, eps(), iters)
-    bfgs = Methods.BFGS(length(x))
-    @test f_name != "rosenbrock" || pts[end] == [1.0000000002538125, 1.0000000005044984]
-    @info "BFGS"
     @info pts[end]
     @info errs[end], i
+    @test f_name != "rosenbrock" || pts[end] == [1.0000000002538125, 1.0000000005044984]
     # end
 end
 

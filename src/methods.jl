@@ -1,4 +1,5 @@
 module Methods
+using Base:Integer
 using FastClosures
 using LinearAlgebra
 using ExportAll
@@ -63,10 +64,15 @@ end
 
 mutable struct BFGS <: DescentMethod
     Q::Matrix{Float64}
+    x′::Vector{Float64}
+    g′::Vector{Float64}
+    δ::Vector{Float64}
+    γ::Vector{Float64}
 end
 
-BFGS(n::Int64) = BFGS(Matrix(1.0I, n, n))
-
+function BFGS(n::T) where T <: Integer
+    return BFGS(Matrix(1.0I, n, n), zeros(n), zeros(n), zeros(n), zeros(n))
+end
 function strong_backtracking(f, ∇, x::Vector{Float64}, d; α=1.0, β=1e-4, σ=0.1)::Float64
     y0::Float64, g0 = f(x), ∇(x) ⋅ d
     y_prev::Float64, α_prev::Float64  = NaN, 0.0
@@ -90,43 +96,43 @@ function strong_backtracking(f, ∇, x::Vector{Float64}, d; α=1.0, β=1e-4, σ=
     end
   # zoom phase
     ylo::Float64 = f(x + αlo * d)
-    @debug "Before second inf loop"
+    # @debug "Before second inf loop"
     α_old = NaN
     while true
-        @debug "Start loop"
+        # @debug "Start loop"
         α = (αlo + αhi) / 2
         if α == α_old
             return α
         else
             α_old = α
         end
-        @debug "α: $α"
+        # @debug "α: $α"
         y = f(x + α * d)
-        @debug "y: $y"
-        @debug "y > y0 + β * α * g0 $(y > y0 + β * α * g0)"
-        @debug "y ≥ ylo $(y ≥ ylo)"
+        # @debug "y: $y"
+        # @debug "y > y0 + β * α * g0 $(y > y0 + β * α * g0)"
+        # @debug "y ≥ ylo $(y ≥ ylo)"
         if y > y0 + β * α * g0 || y ≥ ylo
-            @debug "first case"
-            @debug "ylo $ylo"
+            # @debug "first case"
+            # @debug "ylo $ylo"
             αhi  = α
-            @debug "ahi $αhi"
+            # @debug "ahi $αhi"
         else
-            @debug "second case"
+            # @debug "second case"
             g  = ∇(x + α * d) ⋅ d
-            @debug "g: $g"
-            @debug "abs(g): $(abs(g))"
-            @debug "-σ * g0 : $(-σ * g0)"
+            # @debug "g: $g"
+            # @debug "abs(g): $(abs(g))"
+            # @debug "-σ * g0 : $(-σ * g0)"
             if abs(g) ≤ -σ * g0
-                @debug "second case inner first case"
+                # @debug "second case inner first case"
                 return α
             elseif g * (αhi - αlo) ≥ 0
-                @debug "second case inner second case"
+                # @debug "second case inner second case"
                 αhi = αlo
             end
             αlo = α
-            @debug "α: $α"
-            @debug "αlo: $αlo"
-            @debug "nether case"
+            # @debug "α: $α"
+            # @debug "αlo: $αlo"
+            # @debug "nether case"
         end
     end
 end
@@ -141,18 +147,23 @@ end
     # @debug "g: $g"
     α = strong_backtracking(f, ∇f, x, -Q * g)
     # @debug "α: $α"
-    x′::Vector{Float64} = x .+ α .* (-Q * g)
-    # @debug "x': $x′"
-    g′::Vector{Float64} = ∇f(x′)
-    # @debug "g: $g′"
-    δ::Vector{Float64} = x′ .- x
-    # @debug "δ: $δ"
-    γ::Vector{Float64} = g′ .- g
-    # @debug "γ: $γ"
+    x′, g′, δ, γ = M.x′, M.g′, M.δ, M.γ
+
+    x′ = x .+ α .* (-Q * g)
+    @debug "x': $x′"
+    @debug "x .+ α .* (-Q * g): $( x .+ α .* (-Q * g))"
+    @debug "x: $x"
+    g′ .= ∇f(x′)
+    @debug "g: $g′"
+    δ .= x′ .- x
+    @debug "δ: $δ"
+    @debug "x′ .- x: $(x′ .- x)"
+    γ .= g′ .- g
+    @debug "γ: $γ"
     tmp = δ' * γ
     tmp2 = Q * γ
     Q .= Q .- (δ * γ' * Q + tmp2 * δ') / tmp .+ (1 + (γ' * tmp2) / tmp)[1] * (δ * δ') / tmp
-    # @debug "new Q: $Q"
+    @debug "new Q: $Q"
     return x′
 end
 
