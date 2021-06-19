@@ -173,13 +173,17 @@ end
     δs::Vector{Vector{Float64}}
     γs::Vector{Vector{Float64}}
     qs::Vector{Vector{Float64}}
+    g::Vector{Float64}
+    θ′::Vector{Float64}
+    z::Vector{Float64}
+    d::Vector{Float64}
     current::Int64
     csize::Int64
     wraps::WrappedIndex{Int64}
     LBFGS() = new()
 end
 
-    function init!(M::LBFGS, m::Int64, n::Int64)::LBFGS
+function init!(M::LBFGS, m::Int64, n::Int64)::LBFGS
     M.m = m
     M.δs = Vector{Vector{Float64}}(undef, m) # 
     M.γs =  Vector{Vector{Float64}}(undef, m) # 
@@ -189,6 +193,10 @@ end
         M.γs[i] = Vector{Float64}(undef, n) # 
         M.qs[i] = Vector{Float64}(undef, n) # 
     end
+    M.g = Vector{Float64}(undef, n) # 
+    M.z = Vector{Float64}(undef, n) # 
+    M.d = Vector{Float64}(undef, n) # 
+    M.θ′ = Vector{Float64}(undef, n) # 
     M.current = 1
     M.csize = 0
     M.wraps = WrappedIndex(M.current, M.csize, m)
@@ -197,8 +205,12 @@ end
 
     function step!(M::LBFGS, f, ∇f, θ::Vector{Float64})::Vector{Float64}
     δs, γs, qs = M.δs, M.γs, M.qs 
-    g::Vector{Float64} = ∇f(θ)
-    d::Vector{Float64} = -g # kierunek
+    g = M.g
+    θ′ = M.θ′
+    g .= ∇f(θ)
+    d = M.d
+    z = M.z
+    d = -g # kierunek
     wraps = M.wraps
     csize = M.wraps.size
     # if isnan(g)
@@ -213,7 +225,7 @@ end
             qs[i] .= q
             q -= (δs[i] ⋅ q) / (γs[i] ⋅ δs[i]) .* γs[i]
         end
-        z::Vector{Float64} = (γs[last] .* δs[last] .* q) / (γs[last] ⋅ γs[last]) 
+        z .= (γs[last] .* δs[last] .* q) / (γs[last] ⋅ γs[last]) 
         for i in wraps
             z += δs[i] * (δs[i] ⋅ qs[i] - γs[i] ⋅ z) / (γs[i] ⋅ δs[i]) 
         end
@@ -225,12 +237,10 @@ end
     windx = write_index(wraps)
     @debug "Point: $θ"
     @debug "line_search: $α"
-    θ′::Vector{Float64} = θ .+ α .* d
+    θ′ = θ .+ α .* d
     @debug "New Point: $θ′"
-    g′::Vector{Float64} = ∇f(θ′) # nowy wektor
-    
     δs[windx] .= θ′ .- θ
-    γs[windx] .= g′ .- g
+    γs[windx] .= ∇f(θ′) .- g
 
     commit_one(wraps)
     return θ′ 
