@@ -26,7 +26,7 @@ add_test("BFGS",info)
 
 lbfgs = Methods.LBFGS()
 for i = 1:3
-    init!(lbfgs, i)
+    init!(lbfgs, i, length(x))
     @info "L-BFGS-$i: $lbfgs"
     local info = @benchmark pts, errs, i = optimalize(f, ∇f, x, lbfgs, err, iters)
     add_test("L-BFGS-$i", info)

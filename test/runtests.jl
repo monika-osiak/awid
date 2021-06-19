@@ -34,16 +34,24 @@ rand!(x) # inicializowanie losowego punktu startowego
     @testset "WrappedIndex" begin
         widx = WrappedIndex(2, 4, 4)
         @test collect(widx) ==  [ 2,3,4, 1]
+        @test before_mark(widx) == 1
         @test collect(Iterators.reverse(widx)) ==  [ 1,4,3,2]
-    end
+        widx = WrappedIndex(1, 4, 4)
+        @test collect(widx) ==  [ 1,2,3,4]
+        @test collect(Iterators.reverse(widx)) ==  [4,3,2,1]
 
+        widx = WrappedIndex(2, 2, 4)
+        @test before_mark(widx) ==  3
+        widx = WrappedIndex(1, 4, 4)
+        @test before_mark(widx) ==  4
+    end
     @info "Chosen point: $x"
 
     if "optim_bfgs" in test_set
         l = optimize(f, ∇f, x, method=Optim.BFGS(), iterations=iters;inplace=false)
         opti_res = Optim.minimizer(l)
         @info "Optim answer $opti_res"
-    end
+        end
 
     @testset "moment" begin
     # with_logger(logger) do
@@ -56,7 +64,7 @@ rand!(x) # inicializowanie losowego punktu startowego
         @info errs[end], i
     # end
     end
-
+        
         @testset "gd" begin
     # with_logger(logger) do
     mom = zeros(length(x))
@@ -92,7 +100,7 @@ end
 
     for i = 1:3
         lbfgs = Methods.LBFGS()
-        init!(lbfgs, i)
+        init!(lbfgs, i, n)
     # with_logger(logger) do
         local pts, errs, iter = optimalize(f, ∇f, x, lbfgs, eps(), iters)
         @test f_name != "rosenbrock" || pts[end] == lbfgs_res[i]

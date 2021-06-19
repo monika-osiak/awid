@@ -1,8 +1,9 @@
 module Methods
-using Base:Integer
+using Base:Integer, Float64, Int64
 using FastClosures
 using LinearAlgebra
 using ExportAll
+using OptimizationMethods.Wrapped
 
 export Momentum, BFGS, LBFGS, step!, init!, DescentMethod, optimalize, GradientDescent
 
@@ -172,59 +173,74 @@ end
     δs::Vector{Vector{Float64}}
     γs::Vector{Vector{Float64}}
     qs::Vector{Vector{Float64}}
+    current::Int64
+    csize::Int64
+    wraps::WrappedIndex{Int64}
     LBFGS() = new()
 end
 
-    function init!(M::LBFGS, m)::LBFGS
+    function init!(M::LBFGS, m::Int64, n::Int64)::LBFGS
     M.m = m
-    M.δs = [] 
-    M.γs = [] 
-    M.qs = []
+    M.δs = Vector{Vector{Float64}}(undef, m) # 
+    M.γs =  Vector{Vector{Float64}}(undef, m) # 
+    for i in 1:m
+        M.δs[i] = Vector{Float64}(undef, n) # 
+        M.γs[i] = Vector{Float64}(undef, n) # 
+    end
+    M.qs = [] # Vector{Float64}(undef, m) # 
+    M.current = 1
+    M.csize = 0
+    M.wraps = WrappedIndex(M.current, M.csize, m)
     return M
 end
 
     function step!(M::LBFGS, f, ∇f, θ::Vector{Float64})::Vector{Float64}
     δs, γs, qs = M.δs, M.γs, M.qs 
-    m::Int64, g::Vector{Float64} = length(δs), ∇f(θ)
+    g::Vector{Float64} = ∇f(θ)
+    csize = M.csize
     d::Vector{Float64} = -g # kierunek
+    wraps = M.wraps
     # if isnan(g)
         # there is no dericative at θ
         # we can't progress any further
         # posibli move in random direction
         # return θ || (!isnan(y_prev) && y ≥ y_prev)
-    if m > 0 
+    if csize > 0 
         q::Vector{Float64} = g
-        for i in m:-1:1
+        last = before_mark(wraps)
+        for i in  Iterators.reverse(wraps)
             qs[i] = copy(q)
-            @inbounds q -= (δs[i] ⋅ q) / (γs[i] ⋅ δs[i]) .* γs[i]
+            q -= (δs[i] ⋅ q) / (γs[i] ⋅ δs[i]) .* γs[i]
         end
-        z::Vector{Float64} = (γs[m] .* δs[m] .* q) / (γs[m] ⋅ γs[m]) 
-        for i in 1:+1:m
-            @inbounds z += δs[i] * (δs[i] ⋅ qs[i] - γs[i] ⋅ z) / (γs[i] ⋅ δs[i]) 
+        z::Vector{Float64} = (γs[last] .* δs[last] .* q) / (γs[last] ⋅ γs[last]) 
+        for i in wraps
+            z += δs[i] * (δs[i] ⋅ qs[i] - γs[i] ⋅ z) / (γs[i] ⋅ δs[i]) 
         end
         d = -z; # rekonstrukcja kierunku
     end
     φ = @closure α -> f(θ .+ α .* d)
     φ′ = @closure α -> ∇f(θ .+ α .* d) ⋅ d 
     α = line_search(φ, φ′, d)
+    windx = write_index(wraps)
     @debug "Point: $θ"
     @debug "line_search: $α"
     θ′::Vector{Float64} = θ .+ α .* d
     @debug "New Point: $θ′"
     g′::Vector{Float64} = ∇f(θ′) # nowy wektor
-    δ::Vector{Float64} = θ′ .- θ
-    γ::Vector{Float64} = g′ .- g
-    push!(δs, δ);
-    push!(γs, γ);
+    
+    δs[windx] = θ′ .- θ
+    γs[windx] = g′ .- g
     push!(qs, zero(θ)) 
    
     while length(δs) > M.m
-        popfirst!(δs); popfirst!(γs); popfirst!(qs) 
+        popfirst!(qs) 
     end
+
+    commit_one(wraps)
     return θ′ 
 end
 
-    function zoom(φ, φ′, αlo::Float64, αhi::Float64, c1=1e-4, c2=0.1, jmax=1000)::Float64
+function zoom(φ, φ′, αlo::Float64, αhi::Float64, c1=1e-4, c2=0.1, jmax=1000)::Float64
     φ′0 = φ′(0.0) 
     for j = 1:jmax
         αj::Float64 = 0.5(αlo + αhi) # bisection 
