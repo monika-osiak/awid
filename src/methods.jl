@@ -174,7 +174,6 @@ end
     γs::Vector{Vector{Float64}}
     qs::Vector{Vector{Float64}}
     g::Vector{Float64}
-    θ′::Vector{Float64}
     z::Vector{Float64}
     d::Vector{Float64}
     current::Int64
@@ -196,7 +195,6 @@ function init!(M::LBFGS, m::Int64, n::Int64)::LBFGS
     M.g = Vector{Float64}(undef, n) # 
     M.z = Vector{Float64}(undef, n) # 
     M.d = Vector{Float64}(undef, n) # 
-    M.θ′ = Vector{Float64}(undef, n) # 
     M.current = 1
     M.csize = 0
     M.wraps = WrappedIndex(M.current, M.csize, m)
@@ -206,7 +204,6 @@ end
     function step!(M::LBFGS, f, ∇f, θ::Vector{Float64})::Vector{Float64}
     δs, γs, qs = M.δs, M.γs, M.qs 
     g = M.g
-    θ′ = M.θ′
     g .= ∇f(θ)
     d = M.d
     z = M.z
@@ -225,7 +222,7 @@ end
             qs[i] .= q
             q -= (δs[i] ⋅ q) / (γs[i] ⋅ δs[i]) .* γs[i]
         end
-        z .= (γs[last] .* δs[last] .* q) / (γs[last] ⋅ γs[last]) 
+        z = (γs[last] .* δs[last] .* q) / (γs[last] ⋅ γs[last]) 
         for i in wraps
             z += δs[i] * (δs[i] ⋅ qs[i] - γs[i] ⋅ z) / (γs[i] ⋅ δs[i]) 
         end
@@ -235,10 +232,10 @@ end
     φ′ = @closure α -> ∇f(θ .+ α .* d) ⋅ d 
     α = line_search(φ, φ′, d)
     windx = write_index(wraps)
-    @debug "Point: $θ"
-    @debug "line_search: $α"
+    # @debug "Point: $θ"
+    # @debug "line_search: $α"
     θ′ = θ .+ α .* d
-    @debug "New Point: $θ′"
+    # @debug "New Point: $θ′"
     δs[windx] .= θ′ .- θ
     γs[windx] .= ∇f(θ′) .- g
 
