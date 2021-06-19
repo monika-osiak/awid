@@ -38,7 +38,7 @@ end
 	if produced == this.size
         return nothing
     else
-	return mod((this.stride - produced - 2), this.capacity) + 1, produced + 1
+	return mod((this.stride + (this.size - 1) - produced - 1), this.capacity) + 1, produced + 1
     end
 end
     function Base.eltype(::Type{WrappedIndex{T}}) where T <: Integer

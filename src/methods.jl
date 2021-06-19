@@ -183,11 +183,12 @@ end
     M.m = m
     M.δs = Vector{Vector{Float64}}(undef, m) # 
     M.γs =  Vector{Vector{Float64}}(undef, m) # 
+    M.qs =  Vector{Vector{Float64}}(undef, m) # 
     for i in 1:m
         M.δs[i] = Vector{Float64}(undef, n) # 
         M.γs[i] = Vector{Float64}(undef, n) # 
+        M.qs[i] = Vector{Float64}(undef, n) # 
     end
-    M.qs = [] # Vector{Float64}(undef, m) # 
     M.current = 1
     M.csize = 0
     M.wraps = WrappedIndex(M.current, M.csize, m)
@@ -197,9 +198,9 @@ end
     function step!(M::LBFGS, f, ∇f, θ::Vector{Float64})::Vector{Float64}
     δs, γs, qs = M.δs, M.γs, M.qs 
     g::Vector{Float64} = ∇f(θ)
-    csize = M.csize
     d::Vector{Float64} = -g # kierunek
     wraps = M.wraps
+    csize = M.wraps.size
     # if isnan(g)
         # there is no dericative at θ
         # we can't progress any further
@@ -209,7 +210,7 @@ end
         q::Vector{Float64} = g
         last = before_mark(wraps)
         for i in  Iterators.reverse(wraps)
-            qs[i] = copy(q)
+            qs[i] .= q
             q -= (δs[i] ⋅ q) / (γs[i] ⋅ δs[i]) .* γs[i]
         end
         z::Vector{Float64} = (γs[last] .* δs[last] .* q) / (γs[last] ⋅ γs[last]) 
@@ -228,13 +229,8 @@ end
     @debug "New Point: $θ′"
     g′::Vector{Float64} = ∇f(θ′) # nowy wektor
     
-    δs[windx] = θ′ .- θ
-    γs[windx] = g′ .- g
-    push!(qs, zero(θ)) 
-   
-    while length(δs) > M.m
-        popfirst!(qs) 
-    end
+    δs[windx] .= θ′ .- θ
+    γs[windx] .= g′ .- g
 
     commit_one(wraps)
     return θ′ 

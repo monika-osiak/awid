@@ -44,6 +44,14 @@ rand!(x) # inicializowanie losowego punktu startowego
         @test before_mark(widx) ==  3
         widx = WrappedIndex(1, 4, 4)
         @test before_mark(widx) ==  4
+        widx = WrappedIndex(1, 0, 4)
+        @test write_index(widx) ==  1
+
+        widx = WrappedIndex(1, 0, 4)
+        commit_one(widx)
+        @test before_mark(widx) == 1
+        @test write_index(widx) == 2
+
     end
     @info "Chosen point: $x"
 
